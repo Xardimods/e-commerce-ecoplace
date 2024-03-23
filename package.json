@@ -2,10 +2,12 @@
   "name": "e-commerce-ecoplace-backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "ts-node src/app.ts"
+    "start": "ts-node src/app.ts",
+    "dev": "pnpm nodemon app.js"
   },
   "keywords": [],
   "author": "",
