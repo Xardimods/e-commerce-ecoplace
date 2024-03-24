@@ -4,6 +4,9 @@ GET http://localhost:3000/
 ### Get a list of products
 GET http://localhost:3000/products
 
+###
+GET http://localhost:3000/products/
+
 ### Get a list of vendors
 GET http://localhost:3000/vendors
 
