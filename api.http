@@ -1,0 +1,11 @@
+### Obtain the main route "/"
+GET http://localhost:3000/
+
+### Get a list of products
+GET http://localhost:3000/products
+
+### Get a list of vendors
+GET http://localhost:3000/vendors
+
+### Get a list of users
+GET http://localhost:3000/users
