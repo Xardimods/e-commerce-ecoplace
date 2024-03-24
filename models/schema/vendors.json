@@ -1,0 +1,82 @@
+{
+  "vendors": [
+    {
+      "_id": 123456789,
+      "email": "usuario1@example.com",
+      "password": "password123",
+      "full_name": "Juan Pérez",
+      "street": "Calle Principal 123",
+      "city": "Ciudad",
+      "country": "País",
+      "zip_code": "12345",
+      "phone_number": "+1234567890",
+      "insigths": [],
+      "timestamp": "2024-03-23T12:00:00Z"
+    },
+    {
+      "_id": 987654321,
+      "email": "usuario2@example.com",
+      "password": "qwerty",
+      "full_name": "María García",
+      "street": "Avenida Central 456",
+      "city": "Otra Ciudad",
+      "country": "Otro País",
+      "zip_code": "54321",
+      "phone_number": "+0987654321",
+      "insigths": [],
+      "timestamp": "2024-03-23T12:05:00Z"
+    },
+    {
+      "_id": 135792468,
+      "email": "usuario3@example.com",
+      "password": "abc123",
+      "full_name": "Pedro Martínez",
+      "street": "Calle Secundaria 789",
+      "city": "Otra Ciudad",
+      "country": "Otro País",
+      "zip_code": "67890",
+      "phone_number": "+9876543210",
+      "insigths": [],
+      "timestamp": "2024-03-23T12:10:00Z"
+    },
+    {
+      "_id": 246813579,
+      "email": "usuario4@example.com",
+      "password": "password456",
+      "full_name": "Ana López",
+      "street": "Avenida Principal 321",
+      "city": "Ciudad",
+      "country": "País",
+      "zip_code": "54321",
+      "phone_number": "+1234567890",
+      "insigths": [],
+      "timestamp": "2024-03-23T12:15:00Z"
+    },
+    {
+      "_id": 987654123,
+      "email": "usuario5@example.com",
+      "password": "password789",
+      "full_name": "Carlos Rodríguez",
+      "street": "Calle Principal 987",
+      "city": "Otra Ciudad",
+      "country": "Otro País",
+      "zip_code": "09876",
+      "phone_number": "+9876543210",
+      "insigths": [],
+      "timestamp": "2024-03-23T12:20:00Z"
+    },
+    {
+      "_id": 456123789,
+      "email": "usuario6@example.com",
+      "password": "pass1234",
+      "full_name": "Laura Sánchez",
+      "street": "Avenida Secundaria 654",
+      "city": "Ciudad",
+      "country": "País",
+      "zip_code": "13579",
+      "phone_number": "+0123456789",
+      "insigths": [],
+      "timestamp": "2024-03-23T12:25:00Z"
+    }
+  ]
+}

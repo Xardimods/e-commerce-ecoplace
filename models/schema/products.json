@@ -1,0 +1,174 @@
+{
+  "products": [
+    {
+      "_id": 1,
+      "product_name": "Portátil HP Pavilion 15",
+      "description": "Portátil de última generación con procesador Intel Core i7 y pantalla HD de 15 pulgadas.",
+      "price": 899.99,
+      "images": [
+        "laptop_hp_pavilion_15_1.jpg",
+        "laptop_hp_pavilion_15_2.jpg"
+      ],
+      "stock": 25,
+      "id_vendor": 123456789,
+      "timestamp": "2024-03-23T12:00:00Z",
+      "category_name": [
+        "Electrónica",
+        "Informática"
+      ]
+    },
+    {
+      "_id": 2,
+      "product_name": "Smartphone Samsung Galaxy S20",
+      "description": "Smartphone con cámara de alta resolución y pantalla Super AMOLED de 6.2 pulgadas.",
+      "price": 999.99,
+      "images": [
+        "smartphone_samsung_galaxy_s20_1.jpg",
+        "smartphone_samsung_galaxy_s20_2.jpg"
+      ],
+      "stock": 15,
+      "id_vendor": 987654321,
+      "timestamp": "2024-03-23T12:05:00Z",
+      "category_name": [
+        "Electrónica",
+        "Telefonía"
+      ]
+    },
+    {
+      "_id": 3,
+      "product_name": "Televisor LG OLED 55\"",
+      "description": "Televisor de alta definición con tecnología OLED y Smart TV integrado.",
+      "price": 1499.99,
+      "images": [
+        "tv_lg_oled_55_1.jpg",
+        "tv_lg_oled_55_2.jpg"
+      ],
+      "stock": 10,
+      "id_vendor": 135792468,
+      "timestamp": "2024-03-23T12:10:00Z",
+      "category_name": [
+        "Electrónica",
+        "Televisores"
+      ]
+    },
+    {
+      "_id": 4,
+      "product_name": "Silla de oficina ergonómica",
+      "description": "Silla de oficina ajustable con soporte lumbar y reposabrazos acolchados.",
+      "price": 199.99,
+      "images": [
+        "silla_oficina_ergonomica_1.jpg",
+        "silla_oficina_ergonomica_2.jpg"
+      ],
+      "stock": 30,
+      "id_vendor": 246813579,
+      "timestamp": "2024-03-23T12:15:00Z",
+      "category_name": [
+        "Hogar",
+        "Muebles"
+      ]
+    },
+    {
+      "_id": 5,
+      "product_name": "Libro: El Principito",
+      "description": "Clásico de la literatura infantil escrito por Antoine de Saint-Exupéry.",
+      "price": 9.99,
+      "images": [
+        "libro_el_principito_1.jpg",
+        "libro_el_principito_2.jpg"
+      ],
+      "stock": 50,
+      "id_vendor": 987654123,
+      "timestamp": "2024-03-23T12:20:00Z",
+      "category_name": [
+        "Libros",
+        "Ficción"
+      ]
+    },
+    {
+      "_id": 6,
+      "product_name": "Cámara Canon EOS Rebel T7i",
+      "description": "Cámara réflex digital con sensor CMOS de 24.2 megapíxeles y pantalla táctil.",
+      "price": 749.99,
+      "images": [
+        "camara_canon_eos_rebel_t7i_1.jpg",
+        "camara_canon_eos_rebel_t7i_2.jpg"
+      ],
+      "stock": 20,
+      "id_vendor": 456123789,
+      "timestamp": "2024-03-23T12:25:00Z",
+      "category_name": [
+        "Electrónica",
+        "Fotografía"
+      ]
+    },
+    {
+      "_id": 7,
+      "product_name": "Zapatillas deportivas Nike Air Zoom Pegasus",
+      "description": "Zapatillas de running con amortiguación Zoom Air y malla transpirable.",
+      "price": 129.99,
+      "images": [
+        "zapatillas_nike_air_zoom_pegasus_1.jpg",
+        "zapatillas_nike_air_zoom_pegasus_2.jpg"
+      ],
+      "stock": 40,
+      "id_vendor": 789456123,
+      "timestamp": "2024-03-23T12:30:00Z",
+      "category_name": [
+        "Moda",
+        "Calzado"
+      ]
+    },
+    {
+      "_id": 8,
+      "product_name": "Mochila escolar Eastpak",
+      "description": "Mochila resistente con compartimento para portátil y correas acolchadas.",
+      "price": 49.99,
+      "images": [
+        "mochila_eastpak_1.jpg",
+        "mochila_eastpak_2.jpg"
+      ],
+      "stock": 60,
+      "id_vendor": 147258369,
+      "timestamp": "2024-03-23T12:35:00Z",
+      "category_name": [
+        "Moda",
+        "Accesorios"
+      ]
+    },
+    {
+      "_id": 9,
+      "product_name": "Reloj Casio F91W",
+      "description": "Reloj digital clásico con alarma, cronómetro y luz de fondo.",
+      "price": 19.99,
+      "images": [
+        "reloj_casio_f91w_1.jpg",
+        "reloj_casio_f91w_2.jpg"
+      ],
+      "stock": 100,
+      "id_vendor": 369258147,
+      "timestamp": "2024-03-23T12:40:00Z",
+      "category_name": [
+        "Moda",
+        "Relojes"
+      ]
+    },
+    {
+      "_id": 10,
+      "product_name": "Tabla de cortar de bambú",
+      "description": "Tabla de cortar ecológica y resistente para uso en la cocina.",
+      "price": 14.99,
+      "images": [
+        "tabla_cortar_bambu_1.jpg",
+        "tabla_cortar_bambu_2.jpg"
+      ],
+      "stock": 80,
+      "id_vendor": 258147369,
+      "timestamp": "2024-03-23T12:45:00Z",
+      "category_name": [
+        "Hogar",
+        "Cocina"
+      ]
+    }
+  ]
+}
