@@ -3,6 +3,7 @@ import { corsMiddleware } from './middleware/cors.js';
 import products from "./models/schema/products.json" assert { type: "json" };
 import vendors from "./models/schema/vendors.json" assert { type: "json" };
 import users from "./models/schema/users.json" assert { type: "json" };
+import { bbddConection } from './models/config/conection.js';
 
 const app = express();
 const port = process.env.PORT ?? 3000;
