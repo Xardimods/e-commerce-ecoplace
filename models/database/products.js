@@ -1,4 +1,4 @@
-const mongoose = require('mongoose')
+import mongoose from 'mongoose';
 
 const productSchema = mongoose.Schema({
   name: {
@@ -75,4 +75,4 @@ productSchema.set('toJSON', {
   virtuals: true,
 })
 
-exports.Product = mongoose.model('Product', productSchema)
+export const Product = mongoose.model('Product', productSchema)
