@@ -75,4 +75,34 @@ productSchema.set('toJSON', {
   virtuals: true,
 })
 
-export const Product = mongoose.model('Product', productSchema)
+const Product = mongoose.model('Product', productSchema)
+
+export class ProductsModel {
+  static async getAll() {
+    return await Product.find();
+  }
+
+  static async getById({ id }) {
+    return await Product.findById(id)
+  }
+
+  static async createProduct({ input }) {
+    const newProduct = await Product.create(input)
+    return newProduct;
+  }
+
+  static async updateProduct({ id, input }) {
+    const updatedProduct = await Product.findByIdAndUpdate(id, input, { new: true })
+
+    return updatedProduct ? updatedProduct : false
+  }
+
+  static async deletedProduct({ id }) {
+    try {
+      const deletedProduct = await Product.findByIdAndDelete(id);
+      return deletedProduct ? true : false;
+    } catch (error) {
+      throw error;
+    }
+  }
+}
