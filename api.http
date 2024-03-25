@@ -1,14 +1,41 @@
 ### Obtain the main route "/"
 GET http://localhost:3000/
 
-### Get a list of products
+### GET - Get a list of products
 GET http://localhost:3000/products
 
-###
-GET http://localhost:3000/products/
+### GET - Get product by ID
+GET http://localhost:3000/products/6601ee7e6075e5d2b5d0f256
 
-### Get a list of vendors
-GET http://localhost:3000/vendors
+### POST - Create a product
+POST http://localhost:3000/products
+Content-Type: application/json
 
-### Get a list of users
-GET http://localhost:3000/users
+{
+  "name": "Producto 2",
+  "description": "Este es un ejemplo de descripción de producto.",
+  "image": "imagen_ejemplo.jpg",
+  "images": ["imagen1.jpg", "imagen2.jpg", "imagen3.jpg"],
+  "brand": "Marca Ejemplo",
+  "price": 19.99,
+  "category": "6159a2719b99623f7c9f14d2",
+  "seller": "6159a2719b99623f7c9f14d3",
+  "customer": "6159a2719b99623f7c9f14d4",
+  "countInStock": 50,
+  "rating": 4.5,
+  "numReviews": 10,
+  "isFeatured": true,
+  "dateCreated": "2024-03-25T12:00:00.000Z",
+  "dateUpdated": "2024-03-25T12:00:00.000Z"
+}
+
+### PATCH - Update a product
+PATCH http://localhost:3000/products/6601ee7e6075e5d2b5d0f256
+Content-Type: application/json
+
+{
+  "name": "Samsung Galaxy S24 Ultra"
+}
+
+### DELETE - Delete a product
+DELETE  http://localhost:3000/products/6601ee7e6075e5d2b5d0f256

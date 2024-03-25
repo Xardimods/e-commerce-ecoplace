@@ -1,11 +1,14 @@
-const router = express.Router();
+import { Router } from 'express';
+import { ProductsController } from '../controllers/products.js';
 
-const {
-  getProducts,
-  createProduct
-} = require('../controllers/products')
+export const ProductsRouter = Router();
 
-router.get('/', getProducts)
-router.post('/', createProduct)
+ProductsRouter.get('/', ProductsController.getAll);
+ProductsRouter.get('/:id', ProductsController.getById);
 
-module.exports = router;
+ProductsRouter.post('/', ProductsController.createProduct);
+
+ProductsRouter.patch('/:id', ProductsController.updateProduct)
+
+ProductsRouter.delete('/:id', ProductsController.deleteProduct)
+
