@@ -83,7 +83,7 @@ export class ProductsModel {
   }
 
   static async getById({ id }) {
-    return await Product.findById(id)
+    return await Product.findById(id).populate('categories');
   }
 
   static async getFilteredProducts({ name, categories, minPrice, maxPrice }) {
