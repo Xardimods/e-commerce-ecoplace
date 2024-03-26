@@ -24,47 +24,44 @@ const productSchema = mongoose.Schema({
     type: Number,
     default: 0
   },
-  category: {
+  categories: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Category',
     required: true
   },
-  categories: [{
-    type: String
-  }],
-  seller: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
-  },
-  customer: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
-  },
-  countInStock: {
+    // seller: {
+    //   type: mongoose.Schema.Types.ObjectId,
+    //   ref: 'User',
+    //   required: true
+    // },
+    // customer: {
+    //   type: mongoose.Schema.Types.ObjectId,
+    //   ref: 'User',
+    //   required: true
+    // },
+    countInStock: {
     type: Number,
     required: true,
     min: 0,
     max: 255
   },
-  rating: {
+    rating: {
     type: Number,
     default: 0
   },
-  numReviews: {
+    numReviews: {
     type: Number,
     default: 0
   },
-  isFeatured: {
+    isFeatured: {
     type: Boolean,
     default: false
   },
-  dateCreated: {
+    dateCreated: {
     type: Date,
     default: Date.now,
   },
-  dateUpdated: {
+    dateUpdated: {
     type: Date,
     default: Date.now,
   },
@@ -82,11 +79,11 @@ const Product = mongoose.model('Product', productSchema)
 
 export class ProductsModel {
   static async getAll() {
-    return await Product.find();
+    return await Product.find().populate('categories');
   }
 
   static async getById({ id }) {
-    return await Product.findById(id)
+    return await Product.findById(id).populate('categories');
   }
 
   static async getFilteredProducts({ name, categories, minPrice, maxPrice }) {
