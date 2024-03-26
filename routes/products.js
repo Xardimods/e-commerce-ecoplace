@@ -12,3 +12,4 @@ ProductsRouter.post('/', ProductsController.createProduct);
 ProductsRouter.patch('/:id', ProductsController.updateProduct)
 
 ProductsRouter.delete('/:id', ProductsController.deleteProduct)
+
