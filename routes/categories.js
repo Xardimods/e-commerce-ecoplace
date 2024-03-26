@@ -6,8 +6,8 @@ export const CategoriesRouter = Router();
 CategoriesRouter.get('/', CategoriesController.getAll);
 CategoriesRouter.get('/:id', CategoriesController.getById);
 
-CategoriesRouter.post('/', CategoriesController.createProduct);
+CategoriesRouter.post('/', CategoriesController.createCategory);
 
-CategoriesRouter.patch('/:id', CategoriesController.updateProduct)
+CategoriesRouter.patch('/:id', CategoriesController.updateCategory)
 
-CategoriesRouter.delete('/:id', CategoriesController.deleteProduct)
+CategoriesRouter.delete('/:id', CategoriesController.deleteCategory)
