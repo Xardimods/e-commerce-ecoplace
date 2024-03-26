@@ -28,40 +28,30 @@ const productSchema = mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Category',
     required: true
-  },
-    // seller: {
-    //   type: mongoose.Schema.Types.ObjectId,
-    //   ref: 'User',
-    //   required: true
-    // },
-    // customer: {
-    //   type: mongoose.Schema.Types.ObjectId,
-    //   ref: 'User',
-    //   required: true
-    // },
-    countInStock: {
+  }],
+  countInStock: {
     type: Number,
     required: true,
     min: 0,
     max: 255
   },
-    rating: {
+  rating: {
     type: Number,
     default: 0
   },
-    numReviews: {
+  numReviews: {
     type: Number,
     default: 0
   },
-    isFeatured: {
+  isFeatured: {
     type: Boolean,
     default: false
   },
-    dateCreated: {
+  dateCreated: {
     type: Date,
     default: Date.now,
   },
-    dateUpdated: {
+  dateUpdated: {
     type: Date,
     default: Date.now,
   },
