@@ -29,16 +29,19 @@ const productSchema = mongoose.Schema({
     ref: 'Category',
     required: true
   },
-  // seller: {
-  //   type: mongoose.Schema.Types.ObjectId,
-  //   ref: 'User',
-  //   required: true
-  // },
-  // customer: {
-  //   type: mongoose.Schema.Types.ObjectId,
-  //   ref: 'User',
-  //   required: true
-  // },
+  categories: [{
+    type: String
+  }],
+  seller: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  customer: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
   countInStock: {
     type: Number,
     required: true,
@@ -90,6 +93,12 @@ export class ProductsModel {
     if (name) {
       return await Product.find({ name: { $regex: new RegExp(name, "i") } });
     }
+
+    if (categories) {
+      return await Product.find({ categories: { $in: [categories.toLowerCase()] } })
+    }
+
+    return await Product.find({})
   }
 
   static async createProduct({ input }) {
