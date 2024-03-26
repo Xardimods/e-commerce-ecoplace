@@ -24,11 +24,11 @@ const productSchema = mongoose.Schema({
     type: Number,
     default: 0
   },
-  category: {
+  categories: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Category',
     required: true
-  },
+  }],
   // seller: {
   //   type: mongoose.Schema.Types.ObjectId,
   //   ref: 'User',
@@ -79,7 +79,7 @@ const Product = mongoose.model('Product', productSchema)
 
 export class ProductsModel {
   static async getAll() {
-    return await Product.find();
+    return await Product.find().populate('categories');
   }
 
   static async getById({ id }) {

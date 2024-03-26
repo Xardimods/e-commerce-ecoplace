@@ -3,19 +3,33 @@ import { CategoriesModel } from "../models/database/categories.js";
 
 export class ProductsController {
   static async getAll(req, res) {
-    const products = await ProductsModel.getAll();
+    const products = await ProductsModel.getAll()
     res.json(products);
   }
 
   static async createProduct(req, res) {
-    const category = await CategoriesModel.getById({id});
-    if (!category) {
-      return res.status(400).send('Invalid Category')
+    const productData = req.body;
+
+    if (!Array.isArray(productData.categories) || !productData.categories.length) {
+      return res.status(400).json({ message: "Invalid categories format" });
     }
 
-    const product = req.body;
-    const newProduct = await ProductsModel.createProduct({ input: product });
+    const categoryIds = productData.categories;
+
+    const categories = await Promise.all(
+      categoryIds.map(id => CategoriesModel.getById({ id }))
+    );
+
+    if (categories.some(category => !category)) {
+      return res.status(400).json({message: 'Invalid Category'})
+    }
+
+    try {
+      const newProduct = await ProductsModel.createProduct({ input: productData });
     res.status(201).json(newProduct);
+    } catch (error) {
+      res.status(500).json({ message: "Error creating product", error: error.message });
+    }
   }
 
   static async getById(req, res) {
