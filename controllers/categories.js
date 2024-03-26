@@ -23,7 +23,7 @@ export class CategoriesController{
     const categorie = req.body;
     const { id } = req.params
 
-    const updatedCategory = await ProductsModel.updateCategory({ id, input: categorie })
+    const updatedCategory = await CategoriesModel.updateCategory({ id, input: categorie })
     res.json({ message: 'Category Updated' })
   }
 
