@@ -85,6 +85,14 @@ export class ProductsModel {
       return await Product.find({ categories: { $in: [categories.toLowerCase()] } })
     }
 
+    if (minPrice) {
+      return await Product.find({ price: { $lte: minPrice } })
+    }
+
+    if (maxPrice) {
+      return await Product.find({ price: { $gte: maxPrice } })
+    }
+
     return await Product.find({})
   }
 
