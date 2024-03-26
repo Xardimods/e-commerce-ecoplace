@@ -16,7 +16,13 @@ export class ProductsController {
     const { id } = req.params;
     const product = await ProductsModel.getById({ id });
     if (!product) res.status(404).json({ message: "Not found." });
-    res.json(product);
+    return res.json(product);
+  }
+
+  static async getFilteredProducts(req, res) {
+    const { name, categories, minPrice, maxPrice } = req.query;
+    const filteredProducts = await ProductsModel.getFilteredProducts({ name, categories, minPrice, maxPrice });
+    res.json(filteredProducts);
   }
 
   static async updateProduct(req, res) {

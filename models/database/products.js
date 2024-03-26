@@ -86,6 +86,12 @@ export class ProductsModel {
     return await Product.findById(id)
   }
 
+  static async getFilteredProducts({ name, categories, minPrice, maxPrice }) {
+    if (name) {
+      return await Product.find({ name: { $regex: new RegExp(name, "i") } });
+    }
+  }
+
   static async createProduct({ input }) {
     const newProduct = await Product.create(input)
     return newProduct;
