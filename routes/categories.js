@@ -8,6 +8,6 @@ CategoriesRouter.get('/:id', CategoriesController.getById);
 
 CategoriesRouter.post('/', CategoriesController.createCategory);
 
-CategoriesRouter.patch('/:id', CategoriesController.updateCategory)
+CategoriesRouter.put('/:id', CategoriesController.updateCategory)
 
 CategoriesRouter.delete('/:id', CategoriesController.deleteCategory)

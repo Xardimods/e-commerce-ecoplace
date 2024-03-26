@@ -1,4 +1,5 @@
 import { ProductsModel } from "../models/database/products.js";
+import { CategoriesModel } from "../models/database/categories.js";
 
 export class ProductsController {
   static async getAll(req, res) {
@@ -7,6 +8,11 @@ export class ProductsController {
   }
 
   static async createProduct(req, res) {
+    const category = await CategoriesModel.getById({id});
+    if (!category) {
+      return res.status(400).send('Invalid Category')
+    }
+
     const product = req.body;
     const newProduct = await ProductsModel.createProduct({ input: product });
     res.status(201).json(newProduct);
