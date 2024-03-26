@@ -6,12 +6,6 @@ const categorySchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
-  color: {
-    type: String,
-  },
-  icon: {
-    type: String,
-  },
 });
 
 categorySchema.virtual("id").get(function () {
@@ -23,4 +17,35 @@ categorySchema.set("toJSON", {
   virtuals: true,
 });
 
-exports.Category = mongoose.model("Category", categorySchema);
+const Category = mongoose.model("Category", categorySchema);
+
+export class CategoriesModel{
+  static async getAll() {
+    return await Category.find();
+  }
+
+  static async getById({ id }) {
+    return await Category.findById(id)
+  }
+
+  static async createCategory({ input }) {
+    const newCategory = await Category.create(input)
+    return newCategory;
+  }
+
+  static async updateCategory({ id, input }) {
+    const updatedCategory = await Category.findByIdAndUpdate(id, input, { new: true })
+
+    return updatedCategory ? updatedCategory : false
+  }
+
+  static async deletedCategory({ id }) {
+    try {
+      const deletedCategory = await Category.findByIdAndDelete(id);
+      return deletedCategory ? true : false;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+}
