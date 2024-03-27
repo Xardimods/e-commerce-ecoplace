@@ -81,9 +81,9 @@ export class ProductsModel {
       return await Product.find({ name: { $regex: new RegExp(name, "i") } });
     }
 
-    if (categories) {
-      return await Product.find({ categories: { $in: [categories.toLowerCase()] } })
-    }
+    // if (categories) {
+    //   return await Product.find({ categories: { $elemMatch: { categoryName: categories.toLowerCase() } } });
+    // }
 
     if (minPrice) {
       return await Product.find({ price: { $lte: minPrice } })
