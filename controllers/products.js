@@ -21,12 +21,12 @@ export class ProductsController {
     );
 
     if (categories.some(category => !category)) {
-      return res.status(400).json({message: 'Invalid Category'})
+      return res.status(400).json({ message: 'Invalid Category' })
     }
 
     try {
       const newProduct = await ProductsModel.createProduct({ input: productData });
-    res.status(201).json(newProduct);
+      res.status(201).json(newProduct);
     } catch (error) {
       res.status(500).json({ message: "Error creating product", error: error.message });
     }
@@ -50,13 +50,13 @@ export class ProductsController {
     const { id } = req.params
 
     const updatedProduct = await ProductsModel.updateProduct({ id, input: product })
-    res.json({ message: 'Product Updated' })
+    res.json({ message: 'Product Updated', updatedProduct })
   }
 
   static async deleteProduct(req, res) {
     const { id } = req.params
     const deletedProduct = await ProductsModel.deletedProduct({ id })
-    res.json({ message: 'Product Deleted' })
+    res.json({ message: 'Product Deleted', deletedProduct })
   }
 }
 
