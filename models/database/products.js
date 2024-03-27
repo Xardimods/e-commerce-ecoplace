@@ -57,23 +57,15 @@ const productSchema = mongoose.Schema({
   },
 })
 
-productSchema.virtual('id').get(function () {  // esto para quitarle la parte _id  el guion bajo para mas comodidad
-  return this._id.toHexString();
-})
-
-productSchema.set('toJSON', {
-  virtuals: true,
-})
-
 const Product = mongoose.model('Product', productSchema)
 
 export class ProductsModel {
   static async getAll() {
-    return await Product.find().populate('categories');
+    return await Product.find().populate({ path: 'categories', select: 'categoryName -_id' });
   }
 
   static async getById({ id }) {
-    return await Product.findById(id).populate('categories');
+    return await Product.findById(id).populate({ path: 'categories', select: 'categoryName -_id' });
   }
 
   static async getFilteredProducts({ name, categories, minPrice, maxPrice }) {
