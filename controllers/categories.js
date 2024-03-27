@@ -14,8 +14,13 @@ export class CategoriesController{
   }
 
   static async createCategory(req, res) {
-    const categorie = req.body;
-    const newCategory = await CategoriesModel.createCategory({ input: categorie });
+    const category = req.body;
+    const {newCategory, isExisting} = await CategoriesModel.createCategory({ input: category });
+
+    if (isExisting) {
+      return res.status(409).json({message: 'Category already exists', category: newCategory})
+    }
+
     res.status(201).json(newCategory);
   }
 
@@ -23,8 +28,24 @@ export class CategoriesController{
     const categorie = req.body;
     const { id } = req.params
 
-    const updatedCategory = await CategoriesModel.updateCategory({ id, input: categorie })
-    res.json({ message: 'Category Updated' })
+    const { conflict, updatedCategory, existingCategory } = await CategoriesModel.updateCategory({ id, input: categorie });
+
+    // Si hay un conflicto, envía un mensaje indicándolo
+    if (conflict) {
+      return res.status(409).json({
+        message: "A category with the given name already exists.",
+        existingCategoryName: existingCategory.categoryName,
+        existingCategoryId: existingCategory._id,
+      });
+    }
+
+    // Si la categoría se actualizó correctamente
+    if (updatedCategory) {
+      return res.json({ message: 'Category Updated', category: updatedCategory });
+    } else {
+      // Si el ID proporcionado no corresponde a ninguna categoría existente
+      return res.status(404).json({ message: 'Category not found' });
+    }
   }
 
   static async deleteCategory(req, res) {
