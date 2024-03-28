@@ -53,35 +53,29 @@ const userSchema = mongoose.Schema({
     default: Date.now,
   },
   tokens: [{
-    token: String,
-    required: true
+    token: {
+      type: String,
+      required: true,
+    }
   }]
-});
-
-userSchema.virtual("id").get(function () {
-  // esto para quitarle la parte _id  el guion bajo para mas comodidad
-  return this._id.toHexString();
-});
-
-userSchema.set("toJSON", {
-  virtuals: true,
 });
 
 const User = mongoose.model("User", userSchema);
 
-User.methods.generateAuthToken = async function () {
-  const user = this
-  const token = jwt.sign({
-    _id: user._id.toString()
-  }, process.env.JWT_SECRET_KEY);
-  user.tokens = user.tokens.concat({ token })
-
-  await user.save()
-
-  return token;
-}
-
 export class UserModel {
+
+  static async generateAuthToken() {
+    const user = this
+    const token = jwt.sign({
+      _id: user._id.toString()
+    }, process.env.JWT_SECRET_KEY);
+    user.tokens = user.tokens.concat({ token })
+
+    await user.save()
+
+    return token;
+  }
+
   static async getUser() { }
 
   static async createUser() { }
