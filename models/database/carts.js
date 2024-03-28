@@ -16,19 +16,15 @@ const cartSchema = new mongoose.Schema({
       default: 1
     }
   }],
+  owner: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
   createdAt: {
     type: Date,
     default: Date.now
   },
-});
-
-cartSchema.virtual("id").get(function () {
-  // esto para quitarle la parte _id  el guion bajo para mas comodidad
-  return this._id.toHexString();
-});
-
-cartSchema.set("toJSON", {
-  virtuals: true,
 });
 
 exports.Cart = mongoose.model('Cart', cartSchema);

@@ -4,7 +4,7 @@ import bycrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
 const userSchema = mongoose.Schema({
-  email: { type: String, required: true, unique: true },
+  email: { type: String, required: true, unique: true, validate: [validator.isEmail, 'Please provide a valid email'] },
   password: {
     type: String,
     required: true,
@@ -42,6 +42,14 @@ const userSchema = mongoose.Schema({
     required: true,
     ref: 'Role', 
   },
+  cart: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Cart',
+  },
+  bills: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Bill',
+  }],
   insights: [
     // aqui agregaremos en base a nuestra necesidad
     {

@@ -53,6 +53,11 @@ const billSchema = new mongoose.Schema({
     required: true,
     enum: ['PAID', 'PENDING', 'CANCELLED']
   },
+  owner: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
   createdAt: {
     type: Date,
     default: Date.now
@@ -60,15 +65,6 @@ const billSchema = new mongoose.Schema({
   updatedAt: {
     type: Date
   }
-});
-
-billSchema.virtual("id").get(function () {
-  // esto para quitarle la parte _id  el guion bajo para mas comodidad
-  return this._id.toHexString();
-});
-
-billSchema.set("toJSON", {
-  virtuals: true,
 });
 
 exports.Bill = mongoose.model('Bill', billSchema);

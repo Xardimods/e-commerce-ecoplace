@@ -42,13 +42,4 @@ const orderSchema = new mongoose.Schema({
   },
 });
 
-orderSchema.virtual("id").get(function () {
-  // esto para quitarle la parte _id  el guion bajo para mas comodidad
-  return this._id.toHexString();
-});
-
-orderSchema.set("toJSON", {
-  virtuals: true,
-});
-
 exports.Order = mongoose.model("Order", orderSchema);

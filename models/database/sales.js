@@ -68,12 +68,4 @@ const saleSchema = new mongoose.Schema({
   },
 });
 
-saleSchema.virtual("id").get(function () {
-  return this._id.toHexString();
-});
-
-saleSchema.set("toJSON", {
-  virtuals: true,
-});
-
 exports.Sale = mongoose.model("Sale", saleSchema);
