@@ -8,7 +8,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "ts-node src/app.ts",
     "dev": "npm nodemon app.js",
-    "devp": "pnpm nodemon app.js"
+    "load": "pnpm nodemon app.js"
   },
   "keywords": [],
   "author": "",
