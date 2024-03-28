@@ -1,15 +1,15 @@
 import express from 'express';
 import morgan from 'morgan';
+import dotenv from 'dotenv'
 import { corsMiddleware } from './middleware/cors.js';
-// import products from "./models/schema/products.json" assert { type: "json" };
-import vendors from "./models/schema/vendors.json" assert { type: "json" };
-import users from "./models/schema/users.json" assert { type: "json" };
-import { bbddConection } from './models/config/conection.js';
+import { db } from './models/config/conection.js';
 import { ProductsRouter } from './routes/products.js';
 import { CategoriesRouter } from './routes/categories.js';
 
+dotenv.config();
+
 const app = express();
-const port = process.env.PORT ?? 3000;
+const port = process.env.PORT;
 
 app.disable('x-powered-by');
 app.use(corsMiddleware());
