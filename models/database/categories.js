@@ -54,12 +54,8 @@ export class CategoriesModel {
     return { conflict: false, updatedCategory };
   }
 
-  static async deletedCategory({ id }) {
-    try {
-      const deletedCategory = await Category.findByIdAndDelete(id);
-      return deletedCategory ? true : false;
-    } catch (error) {
-      throw error;
-    }
+  static async deleteCategory({ id }) {
+    const deleteCategory = await Category.findByIdAndDelete(id);
+    return deleteCategory ? true : false;
   }
 }

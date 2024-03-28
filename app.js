@@ -6,6 +6,7 @@ import { db } from './models/config/conection.js';
 import { ProductsRouter } from './routes/products.js';
 import { CategoriesRouter } from './routes/categories.js';
 import { UserRouter } from './routes/users.js';
+import { RolesRouter } from './routes/roles.js';
 
 dotenv.config();
 
@@ -20,6 +21,7 @@ app.use(morgan('tiny'));
 app.use('/products', ProductsRouter);
 app.use('/categories', CategoriesRouter);
 app.use('/users', UserRouter);
+app.use('/roles', RolesRouter);
 
 app.get('/', (req, res) => {
   res.json({

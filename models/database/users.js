@@ -38,9 +38,9 @@ const userSchema = mongoose.Schema({
     required: true,
   },
   role: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
     required: true,
-    enum: ["customer", "seller", "admin"],
+    ref: 'Role', 
   },
   insights: [
     // aqui agregaremos en base a nuestra necesidad
