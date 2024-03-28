@@ -3,12 +3,13 @@ import { UserController } from "../controllers/users";
 
 export const UserRouter = Router();
 
-UserRouter.get('/');
-UserRouter.get('/me');
+UserRouter.get('/me', UserController.getUser);
 
-UserRouter.post('/')
-UserRouter.post('/login');
+UserRouter.post('/', UserController.createUser)
+UserRouter.post('/login', UserController.logInUser);
+UserRouter.post('/logout', UserController.logOutUser);
+UserRouter.post('/logout-all', UserController.logAuthAllUser);
 
-UserRouter.patch('/me');
+UserRouter.patch('/me', UserController.updateUser);
 
-UserRouter.delete('/me');
+UserRouter.delete('/me', UserController.deleteUser);
