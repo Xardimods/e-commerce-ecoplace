@@ -20,6 +20,19 @@ export class CategoriesController{
     }
   }
 
+  static async findCategoryByName(req, res) {
+    try {
+      const categoryName = req.params.name; 
+      const category = await CategoriesModel.findByName(categoryName);
+      if (!category) {
+        return res.status(404).json({ message: "Category not found." });
+      }
+      res.json(category);
+    } catch (error) {
+      res.status(500).json({ message: "Error finding the category", error: error.message });
+    }
+  }
+
   static async createCategory(req, res) {
     const category = req.body;
     try {
