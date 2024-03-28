@@ -92,22 +92,25 @@ const userSchema = mongoose.Schema({
   }]
 });
 
+userSchema.methods.toJSON = function () {
+  const user = this;
+  const userObject = user.toObject();
+
+  delete userObject.password; // Eliminar la contraseña del objeto que se devuelve
+  delete userObject.tokens; // Eliminar tokens para no enviarlos al cliente
+
+  return userObject;
+}
+
 const User = mongoose.model("User", userSchema);
 
 export class UserModel {
 
   static async generateAuthToken(user) {
-    try {
-      const token = jwt.sign({
-        email: user.email.toString()
-      }, process.env.JWT_SECRET_KEY, { expiresIn: '1d' });
-      user.tokens = user.tokens.concat({ token })
-
-      return token;
-    } catch (error) {
-      console.error('Error al generar el token de autenticación:', error);
-      throw new Error('Error al generar el token de autenticación');
-    }
+    const token = jwt.sign({ _id: user._id.toString() }, process.env.JWT_SECRET_KEY, { expiresIn: '1d' });
+    user.tokens = user.tokens.concat({ token });
+    await user.save(); // Guardamos el token en el array de tokens del usuario en la base de datos
+    return token;
   }
 
   static async getUser() { }
@@ -135,33 +138,21 @@ export class UserModel {
   static async deleteUser() { }
 
   static async logInUser({ email, password }) {
-    try {
-      // Verify email
-      const user = await User.findOne({ email });
-
-      if (!user) {
-        throw new Error('Credenciales incorrectas');
-      }
-
-      // Verify password
-      const validateUserPassword = await bycrypt.compare(password, user.password);
-
-      if (!validateUserPassword) {
-        throw new Error('Credenciales incorrectas');
-      }
-
-      const token = await generateAuthToken(user);
-
-      user.tokens.push({ token });
-      await user.save();
-
-      return { user, token };
-    } catch (error) {
-      throw error;
+    const user = await User.findOne({ email });
+    if (!user) {
+      throw new Error('Credenciales incorrectas');
     }
+    const isMatch = await bycrypt.compare(password, user.password);
+    if (!isMatch) {
+      throw new Error('Credenciales incorrectas');
+    }
+    return user;
   }
 
   static async logOutUser() { }
 
-  static async logAuthAllUser() { }
+  static async logAuthAllUser(user, token) {
+    user.tokens = user.tokens.filter((userToken) => userToken.token !== token);
+    await user.save();
+  }
 }
