@@ -3,7 +3,11 @@ import { UserModel } from "../models/database/users.js";
 export class UserController {
   static async getUser(req, res) { }
 
-  static async createUser(req, res) { }
+  static async createUser(req, res) {
+    const getUserByRequest = req.body;
+    const userCreated = await UserModel.createUser(getUserByRequest);
+    res.status(201).send(userCreated);
+  }
 
   static async updateUser(req, res) { }
 
