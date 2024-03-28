@@ -156,3 +156,11 @@ export class UserModel {
     await user.save();
   }
 }
+
+userSchema.pre('save', async function (next) {
+  const user = this;
+  if (user.isModified('password')) {
+    user.password = await bycrypt.hash(user.password, 8);
+  }
+  next();
+});

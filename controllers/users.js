@@ -2,7 +2,7 @@ import { UserModel } from "../models/database/users.js";
 
 export class UserController {
   static async getUser(req, res) {
-
+    res.send(req.user);
   }
 
   static async createUser(req, res) {
@@ -11,7 +11,9 @@ export class UserController {
     res.status(201).send(userCreated);
   }
 
-  static async updateUser(req, res) { }
+  static async updateUser(req, res) { 
+    
+  }
 
   static async deleteUser(req, res) { }
 

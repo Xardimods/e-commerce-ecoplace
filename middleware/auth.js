@@ -1,19 +1,23 @@
-export const auth = (async (req, res, next) => {
-  try {
-    const token = req.header('Authorization').replace('Bearer ', '')
-    const decode = jwt.verify(token, 'bootcamptalendig')
-    const user = await User.findOne({ _id: decode._id, 'tokens.token': token })
+import jwt from 'jsonwebtoken';
+import { UserModel } from '../models/database/users.js';
 
-    if (!user) {
-      throw Error()
+const auth = async (req, res, next) => {
+    try {
+        const token = req.header('Authorization').replace('Bearer ', '');
+        console.log(token);
+        const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY); // Usa variable de entorno para la clave secreta
+        const user = await UserModel.findOne({ _id: decoded._id, 'tokens.token': token });
+
+        if (!user) {
+            throw new Error();
+        }
+
+        req.token = token;
+        req.user = user;
+        next();
+    } catch (e) {
+        res.status(401).send({ error: 'Por favor, autentícate.' });
     }
+};
 
-    req.token = token
-    req.user = user
-    next();
-  }
-  catch (e) {
-    res.status(401).send({ error: 'Auth Error!' })
-  }
-
-})
+export default auth;

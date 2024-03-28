@@ -1,13 +1,14 @@
 import { Router } from "express";
 import { UserController } from "../controllers/users.js";
+import auth from '../middleware/auth.js';
 
 export const UserRouter = Router();
 
 UserRouter.post('/register', UserController.createUser)
 UserRouter.post('/login', UserController.logInUser);
-UserRouter.post('/logout', UserController.logOutUser);
-UserRouter.post('/logout-all', UserController.logAuthAllUser);
+UserRouter.post('/logout', auth, UserController.logOutUser);
+UserRouter.post('/logout-all', auth, UserController.logAuthAllUser);
 
-UserRouter.get('/me', UserController.getUser);
-UserRouter.patch('/me', UserController.updateUser);
-UserRouter.delete('/me', UserController.deleteUser);
+UserRouter.get('/me', auth, UserController.getUser);
+UserRouter.patch('/me', auth, UserController.updateUser);
+UserRouter.delete('/me', auth, UserController.deleteUser);
