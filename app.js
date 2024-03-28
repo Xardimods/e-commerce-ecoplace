@@ -16,8 +16,8 @@ app.use(corsMiddleware());
 app.use(express.json());
 app.use(morgan('tiny'));
 
-app.use('/products', ProductsRouter);  
-app.use('/categories', CategoriesRouter);  
+app.use('/products', ProductsRouter);
+app.use('/categories', CategoriesRouter);
 
 app.get('/', (req, res) => {
   res.json({
