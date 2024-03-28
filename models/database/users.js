@@ -1,4 +1,7 @@
 import mongoose from 'mongoose';
+import validator from 'validator'
+import bycrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 const userSchema = mongoose.Schema({
   email: { type: String, required: true, unique: true },
@@ -49,6 +52,10 @@ const userSchema = mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  tokens: [{
+    token: String,
+    required: true
+  }]
 });
 
 userSchema.virtual("id").get(function () {
@@ -60,4 +67,18 @@ userSchema.set("toJSON", {
   virtuals: true,
 });
 
-exports.User = mongoose.model("User", userSchema);
+const User = mongoose.model("User", userSchema);
+
+User.methods.generateAuthToken = async function () {
+  const user = this
+  const token = jwt.sign({
+    _id: user._id.toString()
+  }, process.env.JWT_SECRET_KEY);
+  user.tokens = user.tokens.concat({ token })
+  await user.save()
+  return token;
+}
+
+export class UserModel {
+
+}

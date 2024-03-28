@@ -88,6 +88,7 @@ export class ProductsModel {
     // return await Product.find({}).populate({ path: 'categories', select: 'categoryName _id' });
 
     // Inicializa un objeto vacío para construir la consulta
+
     let query = {};
 
     // Agrega cada condición si su parámetro correspondiente está presente
