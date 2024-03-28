@@ -12,7 +12,7 @@ const Category = mongoose.model("Category", categorySchema);
 
 export class CategoriesModel {
   static async getAll() {
-    return await Category.find();
+    return await Category.find();   
   }
 
   static async getById({ id }) {
