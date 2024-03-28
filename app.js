@@ -5,6 +5,7 @@ import { corsMiddleware } from './middleware/cors.js';
 import { db } from './models/config/conection.js';
 import { ProductsRouter } from './routes/products.js';
 import { CategoriesRouter } from './routes/categories.js';
+import { UserRouter } from './routes/users.js';
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ app.use(morgan('tiny'));
 
 app.use('/products', ProductsRouter);
 app.use('/categories', CategoriesRouter);
+app.use('/users', UserRouter);
 
 app.get('/', (req, res) => {
   res.json({

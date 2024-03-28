@@ -4,41 +4,44 @@ GET http://localhost:3000/
 ### GET - Get a list of products
 GET http://localhost:3000/products
 
+### GET - Get all categories
+GET http://localhost:3000/categories
+
 ### GET - Get product by ID
-GET http://localhost:3000/products/660295a2f2cbbb141cd556d3
+GET http://localhost:3000/products/660306bb7265a08bdc43de43
 
 ### GET - Obtain a search param for products
-GET http://localhost:3000/products/search?categories=ab
+GET http://localhost:3000/products/search
+
+###
+GET http://localhost:3000/products/search?categories=6602f205b684b25d98c129ec
 
 ### POST - Create a product
 POST http://localhost:3000/products
 Content-Type: application/json
 
 {
-  "name": "Macbook Pro M1 Pro Negro 2020",
-  "description": "Producto increíble para la cocina del hogar",
-  "image": "imagen_ejemplo.jpg",
-  "images": ["imagen1.jpg", "imagen2.jpg", "imagen3.jpg"],
-  "brand": "Marca Ejemplo",
-  "price": 19.99,
-  "category": "6159a2719b99623f7c9f14d2",
-  "categories": ["ab", "cd", "ef", "gh"],
-  "seller": "6159a2719b99623f7c9f14d3",
-  "customer": "6159a2719b99623f7c9f14d4",
-  "countInStock": 50,
+  "name": "Macbook Pro M3 16' Negro Jet Black",
+  "description": "Esta es una descripción de ejemplo para el producto",
+  "image": "https://ejemplo.com/imagen.jpg",
+  "images": ["https://ejemplo.com/imagen1.jpg", "https://ejemplo.com/imagen2.jpg"],
+  "brand": "Marca de ejemplo",
+  "price": 99.99,
+  "categories": ["6602f205b684b25d98c129ec"],
+  "countInStock": 100,
   "rating": 4.5,
   "numReviews": 10,
   "isFeatured": true,
-  "dateCreated": "2024-03-25T12:00:00.000Z",
-  "dateUpdated": "2024-03-25T12:00:00.000Z"
+  "dateCreated": "2024-03-27T12:00:00.000Z",
+  "dateUpdated": "2024-03-27T12:00:00.000Z"
 }
 
 ### PATCH - Update a product
-PATCH http://localhost:3000/products/660295a2f2cbbb141cd556d3
+PATCH http://localhost:3000/products/6603070f7265a08bdc43de47
 Content-Type: application/json
 
 {
-  "name": "Samsung Galaxy S24 Ultra"
+  "price": 49.99
 }
 
 ### DELETE - Delete a product
