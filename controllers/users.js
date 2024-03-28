@@ -13,7 +13,11 @@ export class UserController {
 
   static async deleteUser(req, res) { }
 
-  static async logInUser(req, res) { }
+  static async logInUser(req, res) {
+    const { email, password } = req.body;
+    const loggedUser = await UserModel.logInUser(email, password);
+    res.status(201).json({ loggedUser });
+  }
 
   static async logOutUser(req, res) { }
 

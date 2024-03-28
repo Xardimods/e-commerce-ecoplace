@@ -96,17 +96,19 @@ const User = mongoose.model("User", userSchema);
 
 export class UserModel {
 
-  // static async generateAuthToken(user) {
-  //   const user = this.user
-  //   const token = jwt.sign({
-  //     email: user.email.toString()
-  //   }, process.env.JWT_SECRET_KEY);
-  //   user.tokens = user.tokens.concat({ token })
+  static async generateAuthToken(user) {
+    try {
+      const token = jwt.sign({
+        email: user.email.toString()
+      }, process.env.JWT_SECRET_KEY, { expiresIn: '1d' });
+      user.tokens = user.tokens.concat({ token })
 
-  //   await user.save()
-
-  //   return token;
-  // }
+      return token;
+    } catch (error) {
+      console.error('Error al generar el token de autenticación:', error);
+      throw new Error('Error al generar el token de autenticación');
+    }
+  }
 
   static async getUser() { }
 
@@ -124,7 +126,7 @@ export class UserModel {
       const createdUser = await User.create(user);
       return createdUser;
     } catch (error) {
-      res.status(500).json({ message: "There was an error!", error });
+      throw new Error('There was an error!', error);
     }
   }
 
@@ -132,7 +134,32 @@ export class UserModel {
 
   static async deleteUser() { }
 
-  static async logInUser() { }
+  static async logInUser({ email, password }) {
+    try {
+      // Verify email
+      const user = await User.findOne({ email });
+
+      if (!user) {
+        throw new Error('Credenciales incorrectas');
+      }
+
+      // Verify password
+      const validateUserPassword = await bycrypt.compare(password, user.password);
+
+      if (!validateUserPassword) {
+        throw new Error('Credenciales incorrectas');
+      }
+
+      const token = await generateAuthToken(user);
+
+      user.tokens.push({ token });
+      await user.save();
+
+      return { user, token };
+    } catch (error) {
+      throw error;
+    }
+  }
 
   static async logOutUser() { }
 
