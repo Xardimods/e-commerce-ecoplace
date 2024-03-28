@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 
 const userSchema = mongoose.Schema({
   email: { type: String, required: true, unique: true },
-  passwordHash: {
+  password: {
     type: String,
     required: true,
   },
@@ -75,10 +75,24 @@ User.methods.generateAuthToken = async function () {
     _id: user._id.toString()
   }, process.env.JWT_SECRET_KEY);
   user.tokens = user.tokens.concat({ token })
+
   await user.save()
+
   return token;
 }
 
 export class UserModel {
+  static async getUser() { }
 
+  static async createUser() { }
+
+  static async updateUser() { }
+
+  static async deleteUser() { }
+
+  static async logInUser() { }
+
+  static async logOutUser() { }
+
+  static async logAuthAllUser() { }
 }
