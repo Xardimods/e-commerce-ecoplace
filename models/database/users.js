@@ -117,7 +117,7 @@ export class UserModel {
     }
 
     try {
-      const salt = await bycrypt.genSalt(10);
+      const salt = await bycrypt.genSalt(8);
 
       user.password = await bycrypt.hash(user.password, salt);
 
