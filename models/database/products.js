@@ -61,7 +61,7 @@ const Product = mongoose.model('Product', productSchema)
 
 export class ProductsModel {
   static async getAll() {
-    return await Product.find().populate({ path: 'categories', select: 'categoryName -_id' });
+    return await Product.find().populate({ path: 'categories', select: 'categoryName' });
   }
 
   static async getById({ id }) {
@@ -69,23 +69,52 @@ export class ProductsModel {
   }
 
   static async getFilteredProducts({ name, categories, minPrice, maxPrice }) {
-    if (name) {
-      return await Product.find({ name: { $regex: new RegExp(name, "i") } });
-    }
-
-    // if (categories) {
-    //   return await Product.find({ categories: { $elemMatch: { categoryName: categories.toLowerCase() } } });
+    // if (name) {
+    //   return await Product.find({ name: { $regex: new RegExp(name, "i") } }).populate({ path: 'categories', select: 'categoryName _id' });;
     // }
 
+    // if (categories) {
+    //   return await Product.find({ categories: { $in: [categories] } }).populate({ path: 'categories', select: 'categoryName _id' });
+    // }
+
+    // if (minPrice) {
+    //   return await Product.find({ price: { $lte: minPrice } }).populate({ path: 'categories', select: 'categoryName _id' });
+    // }
+
+    // if (maxPrice) {
+    //   return await Product.find({ price: { $gte: maxPrice } }).populate({ path: 'categories', select: 'categoryName _id' });
+    // }
+
+    // return await Product.find({}).populate({ path: 'categories', select: 'categoryName _id' });
+
+    // Inicializa un objeto vacío para construir la consulta
+    let query = {};
+
+    // Agrega cada condición si su parámetro correspondiente está presente
+    if (name) {
+      query.name = { $regex: new RegExp(name, "i") };
+    }
+
+    if (categories) {
+      query.categories = { $in: Array.isArray(categories) ? categories : [categories] };
+    }
+
     if (minPrice) {
-      return await Product.find({ price: { $lte: minPrice } })
+      query.price = { $lte: minPrice };
     }
 
     if (maxPrice) {
-      return await Product.find({ price: { $gte: maxPrice } })
+      // Si ya hay una condición de precio (minPrice), combina las condiciones usando $and
+      if (query.price) {
+        query.price.$gte = maxPrice;
+      } else {
+        query.price = { $gte: maxPrice };
+      }
     }
 
-    return await Product.find({})
+    // Realiza la búsqueda utilizando la consulta construida y popula las categorías
+    return await Product.find(query).populate({ path: 'categories', select: 'categoryName _id' });
+
   }
 
   static async createProduct({ input }) {
