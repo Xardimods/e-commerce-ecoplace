@@ -62,10 +62,18 @@ const userSchema = mongoose.Schema({
     trim: true
   },
   role: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
     required: true,
-    enum: ["customer", "seller", "admin"],
+    ref: 'Role',
   },
+  cart: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Cart',
+  },
+  bills: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Bill',
+  }],
   insights: [
     // aqui agregaremos en base a nuestra necesidad
     {

@@ -80,8 +80,8 @@ export class CategoriesController{
     const { id } = req.params
 
     try {
-      const deletedCategory = await CategoriesModel.deletedCategory({ id })
-      res.json({ message: 'Category Deleted', deletedCategory })
+      const deleteCategory = await CategoriesModel.deleteCategory({ id })
+      res.json({ message: 'Category Deleted', deleteCategory })
     } catch (error) {
       return res.status(500).json({message: 'Error deleting category', error: error.message})
     }    
