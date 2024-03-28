@@ -19,6 +19,10 @@ export class CategoriesModel {
     return await Category.findById(id);
   }
 
+  static async findByName(categoryName) {
+    return await Category.findOne({ categoryName: { $regex: new RegExp(categoryName, 'i') } });
+  }
+
   static async createCategory({ input }) {
     const existingCategory = await Category.findOne({
       categoryName: input.categoryName,

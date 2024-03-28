@@ -5,6 +5,7 @@ export const CategoriesRouter = Router();
 
 CategoriesRouter.get('/', CategoriesController.getAll);
 CategoriesRouter.get('/:id', CategoriesController.getById);
+CategoriesRouter.get('/search/:name', CategoriesController.findCategoryByName);
 
 CategoriesRouter.post('/', CategoriesController.createCategory);
 
