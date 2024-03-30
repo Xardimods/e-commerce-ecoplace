@@ -3,7 +3,7 @@ import { CartModel } from "../models/database/carts.js";
 export class CartController {
   static async addItem(req, res) {
     try {
-      const userId = req.user._id; // Asumiendo que el middleware de autenticación añade el usuario al req
+      const userId = req.user._id;
       const items = req.body.items; // Espera una matriz de ítems
 
       const cart = await CartModel.addItemToCart(userId, items);
@@ -29,8 +29,8 @@ export class CartController {
   
   static async updateCart(req, res) {
     try {
-      const userId = req.user._id; // Asegúrate de que este es el ID correcto del usuario
-      const itemsToUpdate = req.body.items; // Esto debería coincidir con la estructura que envías desde Postman
+      const userId = req.user._id; //  ID del usuario
+      const itemsToUpdate = req.body.items; 
   
       const updatedCart = await CartModel.updateCartItems(userId, itemsToUpdate);
       res.status(200).json(updatedCart);
@@ -41,8 +41,8 @@ export class CartController {
   
   static async removeItem(req, res) {
     try {
-      const userId = req.user._id; // Asume que el ID del usuario se obtiene del token de autenticación
-      const { product } = req.body; // Extrae el productId del cuerpo de la solicitud
+      const userId = req.user._id; 
+      const { product } = req.body; 
       
       const updatedCart = await CartModel.removeItemFromCart(userId, product);
       res.status(200).json(updatedCart);

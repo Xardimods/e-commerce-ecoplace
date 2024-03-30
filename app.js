@@ -18,7 +18,7 @@ const port = process.env.PORT;
 app.disable('x-powered-by');
 app.use(corsMiddleware());
 app.use(express.json());
-app.use(morgan('tiny'));
+app.use(morgan('dev'));
 
 app.use('/products', ProductsRouter);
 app.use('/categories', CategoriesRouter);

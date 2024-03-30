@@ -64,6 +64,8 @@ const productSchema = mongoose.Schema({
 
 const Product = mongoose.model('Product', productSchema)
 
+export { Product }
+
 export class ProductsModel {
   static async getAll() {
     return await Product.find().populate({ path: 'categories', select: 'categoryName' });
