@@ -1,14 +1,15 @@
 import { Router } from 'express';
 import { CategoriesController } from '../controllers/categories.js';
+import auth from '../middleware/auth.js';
 
 export const CategoriesRouter = Router();
 
-CategoriesRouter.get('/', CategoriesController.getAll);
-CategoriesRouter.get('/:id', CategoriesController.getById);
-CategoriesRouter.get('/search/:name', CategoriesController.findCategoryByName);
+CategoriesRouter.get('/', auth, CategoriesController.getAll);
+CategoriesRouter.get('/:id', auth, CategoriesController.getById);
+CategoriesRouter.get('/search/:name', auth, CategoriesController.findCategoryByName);
 
-CategoriesRouter.post('/', CategoriesController.createCategory);
+CategoriesRouter.post('/', auth, CategoriesController.createCategory);
 
-CategoriesRouter.put('/:id', CategoriesController.updateCategory)
+CategoriesRouter.put('/:id', auth, CategoriesController.updateCategory)
 
-CategoriesRouter.delete('/:id', CategoriesController.deleteCategory)
+CategoriesRouter.delete('/:id', auth, CategoriesController.deleteCategory)

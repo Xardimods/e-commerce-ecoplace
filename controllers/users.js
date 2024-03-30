@@ -12,22 +12,36 @@ export class UserController {
   }
 
   static async updateUser(req, res) { 
-    
+    try {
+      const user = await UserModel.updateUser(req.user._id, req.body);
+      res.json(user);
+    } catch (error) {
+      res.status(400).send({ message: error.message });
+    }
   }
 
-  static async deleteUser(req, res) { }
+  static async deleteUser(req, res) { 
+    try {
+      await UserModel.deleteUser(req.user._id);
+      res.send({ message: 'User eliminated succesfull.' });
+    } catch (error) {
+      res.status(500).send({ message: error.message });
+    }
+  }
 
   static async logInUser(req, res) {
     try {
       const { email, password } = req.body;
       const user = await UserModel.logInUser({ email, password });
-      const token = await UserModel.generateAuthToken(user);
-      res.status(200).json({
-        user: {
+      if (user) {
+        const token = await user.generateAuthToken();
+        res.status(200).json({
           email: user.email,
-        },
-        token
-      });
+          token
+        });
+      } else {
+        res.status(400).send("Error authneticated user.");
+      }
     } catch (error) {
       res.status(400).send(error.message);
     }
@@ -42,5 +56,12 @@ export class UserController {
     }
   }
 
-  static async logAuthAllUser(req, res) { }
+  static async logAuthAllUser(req, res) { 
+    try {
+      await UserModel.logAuthAllUser(req.user);
+      res.status(200).send({ message: 'All sessions have been closed successfully.' });
+    } catch (error) {
+      res.status(500).send({ message: 'Error closing all sessions.', error: error.message });
+    }
+  }
 }

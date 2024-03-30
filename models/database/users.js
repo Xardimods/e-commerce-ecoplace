@@ -102,18 +102,28 @@ userSchema.methods.toJSON = function () {
   return userObject;
 }
 
+userSchema.methods.generateAuthToken = async function () {
+  const user = this;
+  const token = jwt.sign({ _id: user._id.toString() }, process.env.JWT_SECRET_KEY, { expiresIn: '1d' });
+  user.tokens = user.tokens.concat({ token });
+  await user.save();
+  return token;
+};
+
+userSchema.pre('save', async function (next) {
+  const user = this;
+  if (user.isModified('password')) {
+    user.password = await bycrypt.hash(user.password, 8);
+  }
+  next();
+});
+
+
 const User = mongoose.model("User", userSchema);
 
+export { User }
+
 export class UserModel {
-
-  static async generateAuthToken(user) {
-    const token = jwt.sign({ _id: user._id.toString() }, process.env.JWT_SECRET_KEY, { expiresIn: '1d' });
-    user.tokens = user.tokens.concat({ token });
-    await user.save(); // Guardamos el token en el array de tokens del usuario en la base de datos
-    return token;
-  }
-
-  static async getUser() { }
 
   static async createUser(user) {
 
@@ -133,9 +143,42 @@ export class UserModel {
     }
   }
 
-  static async updateUser() { }
+  static async updateUser(userId, updates) { 
+    try {
+      const user = await User.findById(userId);
+      if (!user) {
+        throw new Error('Usuario no encontrado');
+      }
+  
+      const allowedUpdates = ['name', 'lastname', 'email', 'password', 'phone', 'street', 'city', 'country', 'zip'];
+      const updateKeys = Object.keys(updates);
+  
+      const isValidOperation = updateKeys.every((update) => allowedUpdates.includes(update));
+  
+      if (!isValidOperation) {
+        throw new Error('Actualizaciones inválidas');
+      }
+  
+      updateKeys.forEach((update) => user[update] = updates[update]);
+      await user.save();
+  
+      return user;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
 
-  static async deleteUser() { }
+  static async deleteUser(userId) { 
+    try {
+      const user = await User.findById(userId);
+      if (!user) {
+        throw new Error('Usuario no encontrado');
+      }
+      await user.remove();
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
 
   static async logInUser({ email, password }) {
     const user = await User.findOne({ email });
@@ -149,18 +192,13 @@ export class UserModel {
     return user;
   }
 
-  static async logOutUser() { }
-
-  static async logAuthAllUser(user, token) {
+  static async logOutUser(user, token) { 
     user.tokens = user.tokens.filter((userToken) => userToken.token !== token);
     await user.save();
   }
-}
 
-userSchema.pre('save', async function (next) {
-  const user = this;
-  if (user.isModified('password')) {
-    user.password = await bycrypt.hash(user.password, 8);
+  static async logAuthAllUser(user) {
+    user.tokens = [];
+    await user.save();
   }
-  next();
-});
+}
