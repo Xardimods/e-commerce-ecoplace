@@ -9,6 +9,7 @@ export class ProductsController {
 
   static async createProduct(req, res) {
     const productData = req.body;
+    productData.seller = req.user._id;  // Añadir el ID del vendedor (usuario) a productData
 
     if (!Array.isArray(productData.categories) || !productData.categories.length) {
       return res.status(400).json({ message: "Invalid categories format" });

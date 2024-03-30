@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { CategoriesController } from '../controllers/categories.js';
 import auth from '../middleware/auth.js';
-import { authAdmin } from '../middleware/auth.js';
+import authAdmin from '../middleware/auth.js';
 
 export const CategoriesRouter = Router();
 

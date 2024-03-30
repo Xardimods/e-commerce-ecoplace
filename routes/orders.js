@@ -4,4 +4,4 @@ import auth from '../middleware/auth.js'
 
 export const OrderRouter = Router()
 
-OrderRouter.post('/', auth, OrderController.createOrder)
+OrderRouter.post('/', auth, OrderController.createOrderFromCart)

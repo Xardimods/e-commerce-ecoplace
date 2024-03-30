@@ -1,13 +1,14 @@
 import { OrderModel } from "../models/database/orders.js"
 
 export class OrderController {
-  static async createOrder(req, res) {
+  static async createOrderFromCart(req, res) {
+    const userId = req.user._id; // Asume que el middleware de autenticación añade el usuario a req.
+    const { methodPayment } = req.body; // Obtener methodPayment desde el cuerpo de la solicitud.
     try {
-      const userId = req.user._id
-      const order = await OrderModel.createOrderFromCart(userId)
-      res.status(200).json(order)
+      const orders = await OrderModel.createOrderFromCart(userId, methodPayment);
+      res.status(201).json(orders);
     } catch (error) {
-      res.status(400).send({ message: error.message })
+      res.status(500).json({ message: "Error creating order from cart", error: error.message });
     }
   }
 }
