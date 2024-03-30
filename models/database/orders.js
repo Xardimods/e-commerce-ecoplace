@@ -55,6 +55,8 @@ const orderSchema = new mongoose.Schema({
 
 const Order = mongoose.model("Order", orderSchema);
 
+export { Order }
+
 export class OrderModel {
   static async createOrderFromCart(userId, methodPayment) {
     try {
@@ -93,7 +95,7 @@ export class OrderModel {
     try {
       let orders = await Order.find({ customer: userId })
         .populate('items.product', 'name price')
-        .populate('customer', 'name lastName street city country zip');
+        .populate('customer', 'name lastname street city country zip');
   
       // Calcular el total para cada orden
       orders = orders.map(order => {
@@ -118,7 +120,7 @@ export class OrderModel {
     try {
     const order = await Order.findById(orderId)
       .populate('items.product', 'name price')
-      .populate('customer', 'name lastName street city country zip');
+      .populate('customer', 'name lastname street city country zip');
 
     // Verifica si la orden existe antes de intentar acceder a sus propiedades
     if (!order) {

@@ -47,7 +47,6 @@ export class CartModel {
       if (productIndex > -1) {
         // El producto ya existe en el carrito, actualiza la cantidad
         cart.items[productIndex].quantity += item.quantity;
-        // Considera si deseas actualizar el precio aquí también
       } else {
         // Añade el nuevo producto al carrito, incluyendo el precio actualizado
         cart.items.push({

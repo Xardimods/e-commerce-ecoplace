@@ -9,6 +9,7 @@ import { UserRouter } from './routes/users.js';
 import { RolesRouter } from './routes/roles.js';
 import { CartRouter } from './routes/carts.js';
 import { OrderRouter } from './routes/orders.js';
+import { SalesRouter } from './routes/sales.js';
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ app.use('/users', UserRouter);
 app.use('/roles', RolesRouter);
 app.use('/carts', CartRouter);
 app.use('/orders', OrderRouter);
+app.use('/sales', SalesRouter);
 
 app.get('/', (req, res) => {
   res.json({

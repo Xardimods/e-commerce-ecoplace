@@ -1,71 +1,100 @@
 import mongoose from 'mongoose';
+import { Order } from './orders.js';
 
 const saleSchema = new mongoose.Schema({
-  product: {
+  order: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Product",
+    ref: "Order", 
     required: true,
   },
   customer: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
+    ref: "User", 
     required: true,
   },
   seller: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
+    ref: "User", 
     required: true,
   },
-  quantity: {
-    type: Number,
-    required: true,
-  },
-  shippingAddress1: {
-    type: String,
-    required: true,
-  },
-  shippingAddress2: {
-    type: String,
-  },
-  city: {
-    type: String,
-    required: true,
-  },
-  zip: {
-    type: String,
-    required: true,
-  },
-  country: {
-    type: String,
-    required: true,
-  },
-  phone: {
-    type: String,
+  totalSalePrice: {
+    type: Number, 
     required: true,
   },
   status: {
-    type: String,
+    type: String, 
     required: true,
-    default: "Pending",
+    default: "Completada",
   },
-  methodPayment: {
-    type: String,
-    required: true,
-    enum: [
-      "CREDIT_CARD",
-      "DEBIT_CARD",
-      "PAYPAL",
-      "BANK_TRANSFER",
-      "CASH_ON_DELIVERY",
-    ],
+  paymentDetails: {
+    method: {
+      type: String, 
+      required: true,
+      enum: ["CREDIT_CARD", "DEBIT_CARD", "PAYPAL", "BANK_TRANSFER", "CASH_ON_DELIVERY"],
+    },
+    transactionId: { type: String }, 
   },
-  totalPrice: {
-    type: Number,
-  },
-  dateOrdered: {
+  dateOfSale: {
     type: Date,
-    default: Date.now,
+    default: Date.now, // Fecha de la transacción de venta
   },
 });
 
-exports.Sale = mongoose.model("Sale", saleSchema);
+const Sale = mongoose.model("Sale", saleSchema);
+
+export class SaleModel {
+  static async getAllSales() {
+    try {
+      return await Sale.find().populate('order')
+      .populate('customer', 'name')
+      .populate('seller', 'name');
+    } catch (error) {
+      throw new Error('Error al obtener todas las ventas: ' + error.message);
+    }
+  }
+
+  static async createSaleFromOrder(orderId) {
+    try {
+      const order = await Order.findById(orderId)
+        .populate({
+          path: 'items.product',
+          populate: {
+            path: 'seller', // Asumiendo que el modelo de Product tiene un campo 'seller'
+          }
+        })
+        .populate('customer', 'name lastname');
+
+      if (!order) throw new Error('Pedido no encontrado.');
+
+      // Opcional: Verifica el estado del pedido aquí
+
+      const sale = new Sale({
+        order: order._id,
+        customer: order.customer._id,
+        totalSalePrice: order.items.reduce((total, item) => total + item.product.price * item.quantity, 0),
+        status: 'Paid',
+        paymentDetails: {
+          method: order.methodPayment,
+          // Detalles adicionales según sea necesario
+        },
+        dateOfSale: new Date() // Ajustar según sea necesario
+      });
+
+      await sale.save();
+      return sale;
+    } catch (error) {
+      throw new Error('Error al crear la venta: ' + error.message);
+    }
+  }
+
+
+  static async getSalesBySeller(sellerId) {
+    try {
+      return await Sale.find({ seller: sellerId })
+      .populate('order')
+      .populate('customer', 'name');
+    } catch (error) {
+      throw new Error('Error al obtener ventas por vendedor: ' + error.message);
+    }
+  }
+}
