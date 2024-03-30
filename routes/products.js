@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import { ProductsController } from '../controllers/products.js';
 import auth from '../middleware/auth.js';
-import authSeller  from '../middleware/auth.js';
-import authAdmin from '../middleware/auth.js';
+import { authSeller }  from '../middleware/auth.js';
+import { authAdmin } from '../middleware/auth.js';
 
 export const ProductsRouter = Router();
 
