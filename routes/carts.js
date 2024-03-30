@@ -5,5 +5,6 @@ import auth from '../middleware/auth.js'
 export const CartRouter = Router()
 
 CartRouter.post('/add', auth, CartController.addItem)
-
-CartRouter.get('/test', (req, res) => res.send('Test route is working!'));
+CartRouter.get('/', auth, CartController.getCart);
+CartRouter.put('/update-cart', auth, CartController.updateCart);
+CartRouter.delete('/remove-item', auth, CartController.removeItem);

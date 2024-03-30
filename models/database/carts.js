@@ -49,6 +49,54 @@ export class CartModel {
     await cart.save();
     return cart.populate({path: 'items.product', select: 'name _id description'});
   }
+
+  static async getCartByUserId(userId) {
+    const cart = await Cart.findOne({ User: userId }).populate({path: 'items.product', select: 'name _id description'});
+    return cart;
+  }
+  
+  static async updateCartItems(userId, itemsToUpdate) {
+    let cart = await Cart.findOne({ User: userId });
+  
+    if (!cart) {
+      // Si no existe el carrito, podrías elegir crear uno nuevo o lanzar un error
+      throw new Error('Cart not found.');
+    } else {
+      // Actualiza o añade los ítems proporcionados
+      itemsToUpdate.forEach((itemToUpdate) => {
+        const itemIndex = cart.items.findIndex(item => item.product.toString() === itemToUpdate.product);
+        if (itemIndex > -1) {
+          // Actualiza la cantidad si el producto ya existe en el carrito
+          cart.items[itemIndex].quantity = itemToUpdate.quantity;
+        } else {
+          // Añade el producto al carrito si no existe
+          cart.items.push(itemToUpdate);
+        }
+      });
+    }
+  
+    await cart.save();
+    return cart;
+  }
+  
+  static async removeItemFromCart(userId, productId) {
+    const cart = await Cart.findOne({ User: userId });
+    if (!cart || cart.items.length === 0) {
+      throw new Error('The cart is empty or not found.');
+    }
+    
+    // Encuentra el índice del ítem en el carrito que coincide con el productId
+    const itemIndex = cart.items.findIndex(item => item.product.toString() === productId);
+    
+    // Si se encuentra el ítem, elimínalo del arreglo
+    if (itemIndex > -1) {
+      cart.items.splice(itemIndex, 1);
+      await cart.save();
+      return cart.populate({path: 'items.product', select: 'name _id description'}); // Devuelve el carrito actualizado
+    } else {
+      throw new Error('Product not found in cart.'); // Maneja el caso en que el producto no se encuentra
+    }
+  }
 }
 
 export { Cart }
