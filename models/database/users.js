@@ -1,7 +1,7 @@
-import mongoose from 'mongoose';
+import mongoose from 'mongoose'
 import validator from 'validator'
-import bycrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import bycrypt from 'bcryptjs'
+import jwt from 'jsonwebtoken'
 
 const userSchema = mongoose.Schema({
   email: {
@@ -93,22 +93,22 @@ const userSchema = mongoose.Schema({
 });
 
 userSchema.methods.toJSON = function () {
-  const user = this;
-  const userObject = user.toObject();
+  const user = this
+  const userObject = user.toObject()
 
-  delete userObject.password; // Eliminar la contraseña del objeto que se devuelve
-  delete userObject.tokens; // Eliminar tokens para no enviarlos al cliente
+  delete userObject.password // Eliminar la contraseña del objeto que se devuelve
+  delete userObject.tokens // Eliminar tokens para no enviarlos al cliente
 
-  return userObject;
+  return userObject
 }
 
 userSchema.methods.generateAuthToken = async function () {
   const user = this;
-  const token = jwt.sign({ _id: user._id.toString() }, process.env.JWT_SECRET_KEY, { expiresIn: '1d' });
-  user.tokens = user.tokens.concat({ token });
-  await user.save();
-  return token;
-};
+  const token = jwt.sign({ _id: user._id.toString() }, process.env.JWT_SECRET_KEY, { expiresIn: '1d' })
+  user.tokens = user.tokens.concat({ token })
+  await user.save()
+  return token
+}
 
 userSchema.pre('save', async function (next) {
   const user = this;
@@ -118,87 +118,77 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
-
 const User = mongoose.model("User", userSchema);
 
 export { User }
 
 export class UserModel {
 
-  static async createUser(user) {
-
-    if (!user.password) {
-      throw new Error('¡Se requiere una contraseña!');
-    }
-
+  static async createUser(userData) {
     try {
-      const salt = await bycrypt.genSalt(8);
-
-      user.password = await bycrypt.hash(user.password, salt);
-
-      const createdUser = await User.create(user);
+      const createdUser = await User.create(userData);
       return createdUser;
     } catch (error) {
-      throw new Error('There was an error!', error);
+      throw new Error('There was an error creating the user: ' + error.message);
     }
   }
 
   static async updateUser(userId, updates) { 
     try {
-      const user = await User.findById(userId);
+      const user = await User.findById(userId)
       if (!user) {
-        throw new Error('Usuario no encontrado');
+        throw new Error('Usuario no encontrado')
       }
   
-      const allowedUpdates = ['name', 'lastname', 'email', 'password', 'phone', 'street', 'city', 'country', 'zip'];
-      const updateKeys = Object.keys(updates);
+      const allowedUpdates = ['name', 'lastname', 'email', 'password', 'phone', 'street', 'city', 'country', 'zip']
+      const updateKeys = Object.keys(updates)
   
-      const isValidOperation = updateKeys.every((update) => allowedUpdates.includes(update));
+      const isValidOperation = updateKeys.every((update) => allowedUpdates.includes(update))
   
       if (!isValidOperation) {
-        throw new Error('Actualizaciones inválidas');
+        throw new Error('Actualizaciones inválidas')
       }
   
-      updateKeys.forEach((update) => user[update] = updates[update]);
-      await user.save();
+      updateKeys.forEach((update) => user[update] = updates[update])
+      await user.save()
   
-      return user;
+      return user
     } catch (error) {
-      throw new Error(error.message);
+      throw new Error(error.message)
     }
   }
 
   static async deleteUser(userId) { 
     try {
-      const user = await User.findById(userId);
+      const user = await User.findById(userId)
       if (!user) {
-        throw new Error('Usuario no encontrado');
+        throw new Error('Usuario no encontrado')
       }
-      await user.remove();
+      await user.remove()
     } catch (error) {
-      throw new Error(error.message);
+      throw new Error(error.message)
     }
   }
 
   static async logInUser({ email, password }) {
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email })
     if (!user) {
-      throw new Error('Credenciales incorrectas');
+      throw new Error('Credenciales incorrectas')
     }
-    const isMatch = await bycrypt.compare(password, user.password);
+    const isMatch = await bycrypt.compare(password, user.password)
     if (!isMatch) {
-      throw new Error('Credenciales incorrectas');
+      throw new Error('Credenciales incorrectas')
     }
-    return user;
+    return user
   }
 
   static async logOutUser(user, token) { 
-    user.tokens = user.tokens.filter((userToken) => userToken.token !== token);
-    await user.save();
+    user.tokens = user.tokens.filter((userToken) => userToken.token !== token)
+    await user.save()
   }
 
   static async logAuthAllUser(user) {
-    user.tokens = [];
-    await user.save();
+    user.tokens = []
+    await user.save()
   }
 }

@@ -1,15 +1,17 @@
 import { Router } from 'express';
 import { ProductsController } from '../controllers/products.js';
+import auth from '../middleware/auth.js';
+import { authAdmin, authSeller } from '../middleware/auth.js';
 
 export const ProductsRouter = Router();
 
-ProductsRouter.get('/', ProductsController.getAll);
-ProductsRouter.get('/search', ProductsController.getFilteredProducts);
-ProductsRouter.get('/:id', ProductsController.getById);
+ProductsRouter.get('/', auth, ProductsController.getAll);
+ProductsRouter.get('/search', auth, ProductsController.getFilteredProducts);
+ProductsRouter.get('/:id', auth, ProductsController.getById);
 
-ProductsRouter.post('/', ProductsController.createProduct);
+ProductsRouter.post('/', auth, authAdmin, authSeller, ProductsController.createProduct);
 
-ProductsRouter.patch('/:id', ProductsController.updateProduct)
+ProductsRouter.patch('/:id', auth, authAdmin, authSeller, ProductsController.updateProduct)
 
-ProductsRouter.delete('/:id', ProductsController.deleteProduct)
+ProductsRouter.delete('/:id', auth, authAdmin, authSeller, ProductsController.deleteProduct)
 

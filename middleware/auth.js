@@ -1,23 +1,48 @@
-import jwt from 'jsonwebtoken';
-import { User } from '../models/database/users.js';
+import jwt from 'jsonwebtoken'
+import { User } from '../models/database/users.js'
+import { RoleModel } from '../models/database/roles.js'
 
 const auth = async (req, res, next) => {
     try {
-        const token = req.header('Authorization').replace('Bearer ', '');
-        console.log(token);
+        const token = req.header('Authorization').replace('Bearer ', '')
+        console.log(token)
         const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY); // Usa variable de entorno para la clave secreta
-        const user = await User.findOne({ _id: decoded._id, 'tokens.token': token });
+        const user = await User.findOne({ _id: decoded._id, 'tokens.token': token })
 
         if (!user) {
-            throw new Error();
+            throw new Error()
         }
 
-        req.token = token;
-        req.user = user;
-        next();
-    } catch (e) {
-        res.status(401).send({ error: 'Por favor, autentícate.' });
-    }
-};
+        const role = await RoleModel.getById({ id: user.role })
+        if (!role) {
+            throw new Error('Rol not found')
+        }
 
-export default auth;
+        req.token = token
+        req.user = user
+        req.userRole = role.roleName
+        next()
+    } catch (e) {
+        res.status(401).send({ error: 'Por favor, autentícate.' })
+    }
+}
+
+const authAdmin = (req, res, next) => {
+    if (req.userRole === 'Admin') {
+        next()
+    } else {
+        res.status(403).send({ error: 'Access denied. Administrator role required.' })
+    }
+}
+
+const authSeller = (req, res, next) => {
+    if (req.userRole === 'Seller') {
+        next()
+    } else {
+        res.status(403).send({ error: 'Access denied. Seller role required.' })
+    }
+}
+
+
+export default auth
+export { authAdmin, authSeller }
