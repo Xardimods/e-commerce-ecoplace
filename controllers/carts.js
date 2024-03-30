@@ -3,12 +3,14 @@ import { CartModel } from "../models/database/carts.js";
 export class CartController {
   static async addItem(req, res) {
     try {
-      const userId = req.user._id; 
-      const { productId, quantity } = req.body;
-      const cart = await CartModel.addItemToCart(userId, { productId, quantity });
+      const userId = req.user._id; // Asumiendo que el middleware de autenticación añade el usuario al req
+      const items = req.body.items; // Espera una matriz de ítems
+
+      const cart = await CartModel.addItemToCart(userId, items);
       res.status(200).json(cart);
     } catch (error) {
-      res.status(400).send({ message: error.message });
+      console.error(error);
+      res.status(500).send({ error: 'Error al añadir ítems al carrito' });
     }
   }
 }
