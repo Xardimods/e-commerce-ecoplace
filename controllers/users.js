@@ -38,9 +38,19 @@ export class UserController {
       const user = await UserModel.logInUser({ email, password })
       if (user) {
         const token = await user.generateAuthToken()
+        res.cookie('auth_token', token, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'strict',
+          maxAge: 24 * 60 * 60 * 1000
+        })
         res.status(200).json({
-          email: user.email,
-          token
+          message: "Login sucessfull",
+          user: {
+            email: user.email,
+            name: user.name,
+            lastname: user.lastname
+          },
         })
       } else {
         res.status(400).send("Error authenticated user.")

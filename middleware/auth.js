@@ -4,13 +4,18 @@ import { RoleModel } from '../models/database/roles.js'
 
 const auth = async (req, res, next) => {
     try {
-        const token = req.header('Authorization').replace('Bearer ', '')
+        const token = req.cookies['auth_token']
         console.log(token)
+
+        if(!token) {
+            throw new Error('Token not found in the cookies')
+        }
+        
         const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY); // Usa variable de entorno para la clave secreta
         const user = await User.findOne({ _id: decoded._id, 'tokens.token': token })
 
         if (!user) {
-            throw new Error()
+            throw new Error('User not found with provided token')
         }
 
         const role = await RoleModel.getById({ id: user.role })
