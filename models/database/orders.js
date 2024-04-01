@@ -98,7 +98,7 @@ export class OrderModel {
   
       // Calcular el total para cada orden
       orders = orders.map(order => {
-        const orderObject = order.toObject(); // Convertir a objeto si es necesario
+        const orderObject = order.toObject();
   
         // Calcular el total sumando el precio de cada producto multiplicado por su cantidad
         const total = order.items.reduce((acc, item) => {
@@ -126,9 +126,8 @@ export class OrderModel {
       throw new Error('Order not found');
     }
 
-    // Ahora que has verificado que order no es null, puedes proceder de forma segura
     const total = order.items.reduce((acc, item) => acc + (item.product.price * item.quantity), 0);
-    const orderObject = order.toObject(); // Convertir el documento Mongoose a un objeto JavaScript simple si es necesario
+    const orderObject = order.toObject(); 
     orderObject.total = total; // Añadir el total calculado al objeto de la orden
 
     return orderObject;
