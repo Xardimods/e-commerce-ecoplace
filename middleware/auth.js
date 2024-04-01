@@ -5,7 +5,6 @@ import { RoleModel } from '../models/database/roles.js'
 const auth = async (req, res, next) => {
     try {
         const token = req.cookies['auth_token']
-        console.log(token)
 
         if(!token) {
             throw new Error('Token not found in the cookies')
