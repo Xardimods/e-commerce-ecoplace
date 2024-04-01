@@ -41,7 +41,7 @@ export class UserController {
         res.cookie('auth_token', token, {
           httpOnly: true,  // segun lei esto previene el acceso desde JS en el navegador
           secure: process.env.NODE_ENV === 'production', // en produccion, envia solo sobre https, tambien podemos usar el 'development'
-          sameSite: 'strict', // te ayuda a mitigar ataques CSRF preguntar al profesor no entendo muy bien cuando investige
+          sameSite: 'strict', // me ayuda a mitigar ataques CSRF preguntar al profesor no entendo muy bien cuando investige
           maxAge: 24 * 60 * 60 * 1000 // duracion de la cookies (1 dia aqui.)
         })
         res.status(200).json({
