@@ -6,8 +6,8 @@ import { authAdmin } from '../middleware/auth.js';
 
 export const ProductsRouter = Router();
 
-ProductsRouter.get('/', auth, ProductsController.getAll);
-ProductsRouter.get('/search', auth, ProductsController.getFilteredProducts);
+ProductsRouter.get('/', ProductsController.getAll);
+ProductsRouter.get('/search', ProductsController.getFilteredProducts);
 ProductsRouter.get('/:id', auth, ProductsController.getById);
 
 ProductsRouter.post('/', auth, authSeller, authAdmin,  ProductsController.createProduct);
