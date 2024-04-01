@@ -5,9 +5,9 @@ import { authAdmin } from '../middleware/auth.js';
 
 export const CategoriesRouter = Router();
 
-CategoriesRouter.get('/', auth, CategoriesController.getAll);
+CategoriesRouter.get('/', CategoriesController.getAll);
 CategoriesRouter.get('/:id', auth, CategoriesController.getById);
-CategoriesRouter.get('/search/:name', auth, CategoriesController.findCategoryByName);
+CategoriesRouter.get('/search/:name', CategoriesController.findCategoryByName);
 
 CategoriesRouter.post('/', auth, authAdmin, CategoriesController.createCategory);
 
