@@ -77,8 +77,7 @@ export class OrderModel {
             quantity: item.quantity,
           }],
           customer: userId,
-          methodPayment, // Utiliza el argumento methodPayment aquí
-          // Asegúrate de incluir cualquier otro campo necesario según tu esquema de Order
+          methodPayment, 
         });
       }));
 
