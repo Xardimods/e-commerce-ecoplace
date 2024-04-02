@@ -1,4 +1,5 @@
 import { UserModel } from "../models/database/users.js"
+import { RoleModel } from "../models/database/roles.js"
 
 export class UserController {
   static async getUser(req, res) {
@@ -7,7 +8,17 @@ export class UserController {
 
   static async createUser(req, res) {
     try {
-      const userCreated = await UserModel.createUser(req.body);
+      const role = await RoleModel.getByName({ roleName: 'customer' });
+      if (!role) {
+        throw new Error('Rol de customer no encontrado');
+      }
+
+      // Agregar el id del rol al cuerpo de la solicitud antes de crear el usuario
+      const userData = {
+        ...req.body,
+        role: role._id,
+      };
+      const userCreated = await UserModel.createUser(userData);
       res.status(201).send(userCreated);
     } catch (error) {
       res.status(400).send({ error: error.message });
