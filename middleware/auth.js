@@ -22,9 +22,6 @@ const auth = async (req, res, next) => {
             throw new Error('Rol not found')
         }
 
-        res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-        next();
-
         req.token = token
         req.user = user
         req.userRole = role.roleName
