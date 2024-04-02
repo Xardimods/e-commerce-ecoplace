@@ -33,7 +33,7 @@ app.use('/sales', SalesRouter);
 
 app.get('/', (req, res) => {
   res.json({
-    message: 'Hello World!'
+    message: 'Welcome to the EcoPlace API!'
   });
 });
 
