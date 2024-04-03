@@ -1,6 +1,7 @@
 import express from 'express';
 import morgan from 'morgan';
 import dotenv from 'dotenv'
+import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import { corsMiddleware } from './middleware/cors.js';
 import { db } from './models/config/conection.js';
@@ -21,6 +22,8 @@ app.disable('x-powered-by');
 app.use(corsMiddleware());
 app.use(express.json());
 app.use(morgan('dev'));
+app.use(bodyParser.urlencoded({extended:true}))
+app.use(bodyParser.json())
 app.use(cookieParser());
 
 app.use('/products', ProductsRouter);
