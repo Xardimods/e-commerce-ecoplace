@@ -8,7 +8,7 @@ export const ProductsRouter = Router();
 
 ProductsRouter.get('/', ProductsController.getAll);
 ProductsRouter.get('/search', ProductsController.getFilteredProducts);
-ProductsRouter.get('/:id', auth, ProductsController.getById);
+ProductsRouter.get('/:id', ProductsController.getById);
 
 ProductsRouter.post('/', auth, authSeller, authAdmin,  ProductsController.createProduct);
 
