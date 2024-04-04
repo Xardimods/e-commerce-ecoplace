@@ -4,15 +4,15 @@ import { RoleModel } from '../models/database/roles.js'
 
 const auth = async (req, res, next) => {
     try {
-        const token = req.cookies['auth_token']
-
-        if(!token) {
-            throw new Error('Token not found in the cookies')
+        const token = req.header('Authorization')?.replace('Bearer ', '');
+        
+        if (!token) {
+            throw new Error('Authentication token not found')
         }
         
-        const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY); // Usa variable de entorno para la clave secreta
-        const user = await User.findOne({ _id: decoded._id, 'tokens.token': token })
-
+        const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+        const user = await User.findOne({ _id: decoded._id, 'tokens.token': token });
+        
         if (!user) {
             throw new Error('User not found with provided token')
         }
@@ -46,7 +46,6 @@ const authSeller = (req, res, next) => {
         res.status(403).send({ error: 'Access denied. Seller role required.' })
     }
 }
-
 
 export default auth
 export { authAdmin, authSeller }

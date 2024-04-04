@@ -3,10 +3,11 @@ import cors from 'cors'
 const ACCEPTED_ORIGINS = [
   'http://localhost:8080',
   'http://localhost:3000',
+  'http://localhost:4321',
   'https://movies.com',
   'https://midu.dev',
   'https://ecoplace.3.us-1.fl0.io',
-  'http://localhost:4321'
+  'https://ecoplaceapi-dev-eqsz.4.us-1.fl0.io'
 ]
 
 export const corsMiddleware = ({ acceptedOrigins = ACCEPTED_ORIGINS } = {}) => cors({

@@ -48,23 +48,18 @@ export class UserController {
       const { email, password } = req.body;
       const user = await UserModel.logInUser({ email, password })
       if (user) {
-        const token = await user.generateAuthToken()
-        res.cookie('auth_token', token, {
-          httpOnly: true,  // segun lei esto previene el acceso desde JS en el navegador
-          secure: process.env.NODE_ENV !== 'development', // en produccion, envia solo sobre https, tambien podemos usar el 'development'
-          sameSite: 'strict', // me ayuda a mitigar ataques CSRF preguntar al profesor no entendo muy bien cuando investige
-          maxAge: 24 * 60 * 60 * 1000 // duracion de la cookies (1 dia aqui.)
-        })
+        const token = await user.generateAuthToken();
         res.status(200).json({
-          message: "Login sucessfull",
+          message: "Login successful",
+          token, // Envía el token como parte de la respuesta
           user: {
             email: user.email,
             name: user.name,
             lastname: user.lastname
           },
-        })
+        });
       } else {
-        res.status(400).send("Error authenticated user.")
+        res.status(400).send("Error authenticated user.");
       }
     } catch (error) {
       res.status(400).send(error.message);
