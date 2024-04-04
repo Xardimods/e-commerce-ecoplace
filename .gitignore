@@ -1,4 +1,11 @@
+# Dependencias
 node_modules
+
+# Archivos de configuración de TypeScript
 tsconfig.json
 
+#Firebase private key
+ecoplaceapiimages-firebase.json
+
+# Variables de entorno
 *.env
