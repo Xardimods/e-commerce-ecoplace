@@ -3,8 +3,7 @@ import morgan from 'morgan';
 import dotenv from 'dotenv'
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
-import cors from 'cors'
-// import { corsMiddleware } from './middleware/cors.js';
+import { corsMiddleware } from './middleware/cors.js';
 import { db } from './models/config/conection.js';
 import { ProductsRouter } from './routes/products.js';
 import { CategoriesRouter } from './routes/categories.js';
@@ -20,12 +19,7 @@ const app = express();
 const port = process.env.PORT;
 
 app.disable('x-powered-by');
-app.use(cors({
-  origin: true,
-  credentials: true,
-  methods: ['GET', 'POST', 'OPTIONS', 'PATCH', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
-}));
+app.use(corsMiddleware());
 app.use(express.json());
 app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({extended:true}))
