@@ -10,7 +10,7 @@ const auth = async (req, res, next) => {
             throw new Error('Authentication token not found')
         }
         
-        const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+        const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY, { expiresIn: '1h' });
         const user = await User.findOne({ _id: decoded._id, 'tokens.token': token });
         
         if (!user) {
