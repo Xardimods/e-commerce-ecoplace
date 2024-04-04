@@ -110,22 +110,6 @@ userSchema.methods.generateAuthToken = async function () {
   return token
 }
 
-userSchema.statics.findByCredentials = async (email, password) => {
-  const user = await User.findOne({ email })
-
-  if(!user) {
-      throw new Error('Error de login')
-  }
-
-  const isMatch = await bycrypt.compare(password, user.password)
-
-  if(!isMatch) {
-      throw new Error('Error de login')
-  }
-
-  return user
-}
-
 userSchema.pre('save', async function (next) {
   const user = this;
   if (user.isModified('password')) {
@@ -184,6 +168,18 @@ export class UserModel {
     } catch (error) {
       throw new Error(error.message)
     }
+  }
+
+  static async logInUser({ email, password }) {
+    const user = await User.findOne({ email })
+    if (!user) {
+      throw new Error('Credenciales incorrectas')
+    }
+    const isMatch = await bycrypt.compare(password, user.password)
+    if (!isMatch) {
+      throw new Error('Credenciales incorrectas')
+    }
+    return user
   }
 
   static async logOutUser(user, token) { 

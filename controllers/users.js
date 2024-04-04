@@ -1,4 +1,4 @@
-import { User, UserModel } from "../models/database/users.js"
+import { UserModel } from "../models/database/users.js"
 import { RoleModel } from "../models/database/roles.js"
 
 export class UserController {
@@ -45,7 +45,8 @@ export class UserController {
 
   static async logInUser(req, res) {
     try {
-      const user = await User.findByCredentials( req.body.email, req.body.password )
+      const { email, password } = req.body;
+      const user = await UserModel.logInUser({ email, password })
       if (user) {
         const token = await user.generateAuthToken()
         res.cookie('auth_token', token, {
