@@ -19,7 +19,7 @@ const app = express();
 const port = process.env.PORT;
 
 app.disable('x-powered-by');
-app.use(corsMiddleware());
+app.use(corsMiddleware);
 app.use(express.json());
 app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({extended:true}))
