@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { bucket } from './firebase-config';
 
 const productSchema = mongoose.Schema({
   name: {
@@ -72,23 +73,6 @@ export class ProductsModel {
   }
 
   static async getFilteredProducts({ name, categories, minPrice, maxPrice }) {
-    // if (name) {
-    //   return await Product.find({ name: { $regex: new RegExp(name, "i") } }).populate({ path: 'categories', select: 'categoryName _id' });;
-    // }
-
-    // if (categories) {
-    //   return await Product.find({ categories: { $in: [categories] } }).populate({ path: 'categories', select: 'categoryName _id' });
-    // }
-
-    // if (minPrice) {
-    //   return await Product.find({ price: { $lte: minPrice } }).populate({ path: 'categories', select: 'categoryName _id' });
-    // }
-
-    // if (maxPrice) {
-    //   return await Product.find({ price: { $gte: maxPrice } }).populate({ path: 'categories', select: 'categoryName _id' });
-    // }
-
-    // return await Product.find({}).populate({ path: 'categories', select: 'categoryName _id' });
 
     // Inicializa un objeto vacío para construir la consulta
 
@@ -103,27 +87,50 @@ export class ProductsModel {
       query.categories = { $in: Array.isArray(categories) ? categories : [categories] };
     }
 
-    if (minPrice) {
-      query.price = { $lte: minPrice };
+    if (minPrice !== undefined) {
+      query.price = { ...query.price, $gte: minPrice };
     }
 
-    if (maxPrice) {
-      // Si ya hay una condición de precio (minPrice), combina las condiciones usando $and
-      if (query.price) {
-        query.price.$gte = maxPrice;
-      } else {
-        query.price = { $gte: maxPrice };
-      }
+    if (maxPrice !== undefined) {
+      query.price = { ...query.price, $lte: maxPrice };
     }
 
     // Realiza la búsqueda utilizando la consulta construida y popula las categorías
-    return await Product.find(query).populate({ path: 'categories', select: 'categoryName _id' });
-
+    return await Product.find(query)
+    .populate({ path: 'categories', select: 'categoryName -_id' })
+    .populate('seller', 'name')
+    .select('name description price images');
   }
 
   static async createProduct({ input }) {
     const newProduct = await Product.create(input)
     return newProduct;
+  }
+
+  static async uploadImagesToFirebase(files) {
+    const uploadPromises = files.map(file => {
+      const fileName = `productos/${Date.now()}-${file.originalname}`;
+      const fileUpload = bucket.file(fileName);
+  
+      return new Promise((resolve, reject) => {
+        const blobStream = fileUpload.createWriteStream({
+          metadata: {
+            contentType: file.mimetype
+          }
+        });
+  
+        blobStream.on('error', (error) => reject(error));
+  
+        blobStream.on('finish', () => {
+          const publicUrl = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURIComponent(fileName)}?alt=media`;
+          resolve(publicUrl);
+        });
+  
+        blobStream.end(file.buffer);
+      });
+    });
+  
+    return Promise.all(uploadPromises);
   }
 
   static async updateProduct({ id, input }) {

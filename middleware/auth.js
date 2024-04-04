@@ -27,25 +27,17 @@ const auth = async (req, res, next) => {
         req.userRole = role.roleName
         next()
     } catch (e) {
-        res.status(401).send({ error: 'Por favor, autentícate.' })
+        res.status(401).send({ error: 'Please, authenticate.' })
     }
 }
 
-const authAdmin = (req, res, next) => {
-    if (req.userRole === 'Admin') {
-        next()
+const authRole = roles => (req, res, next) => {
+    if (roles.includes(req.userRole)) {
+        next();
     } else {
-        res.status(403).send({ error: 'Access denied. Administrator role required.' })
+        res.status(403).send({ error: 'Access denied. Required role not met.' });
     }
-}
-
-const authSeller = (req, res, next) => {
-    if (req.userRole === 'Seller') {
-        next()
-    } else {
-        res.status(403).send({ error: 'Access denied. Seller role required.' })
-    }
-}
+};
 
 export default auth
-export { authAdmin, authSeller }
+export { authRole }

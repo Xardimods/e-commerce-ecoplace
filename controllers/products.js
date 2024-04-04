@@ -8,24 +8,33 @@ export class ProductsController {
   }
 
   static async createProduct(req, res) {
-    const productData = req.body;
-    productData.seller = req.user._id;  // Añadir el ID del vendedor (usuario) a productData
-
-    if (!Array.isArray(productData.categories) || !productData.categories.length) {
-      return res.status(400).json({ message: "Invalid categories format" });
-    }
-
-    const categoryIds = productData.categories;
-
-    const categories = await Promise.all(
-      categoryIds.map(id => CategoriesModel.getById({ id }))
-    );
-
-    if (categories.some(category => !category)) {
-      return res.status(400).json({ message: 'Invalid Category' })
-    }
-
     try {
+      const productData = req.body;
+      productData.seller = req.user._id; // Añadir el ID del vendedor (usuario) a productData
+  
+      // Verificar el formato de categorías y su existencia
+      if (!Array.isArray(productData.categories) || !productData.categories.length) {
+        return res.status(400).json({ message: "Invalid categories format" });
+      }
+  
+      const categories = await Promise.all(
+        productData.categories.map(id => CategoriesModel.getById({ id }))
+      );
+  
+      if (categories.some(category => !category)) {
+        return res.status(400).json({ message: 'Invalid Category' });
+      }
+  
+      // Cargar imágenes a Firebase y obtener URLs si hay archivos de imagen
+      let imageUrls = [];
+      if (req.files && req.files.length > 0) {
+        imageUrls = await uploadImagesToFirebase(req.files);
+      }
+  
+      // Añadir URLs de imágenes a los datos del producto
+      productData.images = imageUrls;
+  
+      // Crear el producto en la base de datos
       const newProduct = await ProductsModel.createProduct({ input: productData });
       res.status(201).json(newProduct);
     } catch (error) {
@@ -34,30 +43,106 @@ export class ProductsController {
   }
 
   static async getById(req, res) {
-    const { id } = req.params;
-    const product = await ProductsModel.getById({ id });
-    if (!product) res.status(404).json({ message: "Not found." });
-    return res.json(product);
+    try {
+      const { id } = req.params;
+      const product = await ProductsModel.getById({ id });
+      if (!product) {
+        return res.status(404).json({ message: "Product not found." });
+      }
+  
+      // Si el producto existe, se devuelve incluyendo las URLs de las imágenes
+      return res.json({
+        ...product.toObject(), // convertir Mongoose Document a un objeto simple.
+        message: "Product found successfully."
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching product", error: error.message });
+    }
   }
 
   static async getFilteredProducts(req, res) {
     const { name, categories, minPrice, maxPrice } = req.query;
-    const filteredProducts = await ProductsModel.getFilteredProducts({ name, categories, minPrice, maxPrice });
-    res.json(filteredProducts);
+    try {
+      const filteredProducts = await ProductsModel.getFilteredProducts({ name, categories, minPrice, maxPrice });
+      res.json(filteredProducts);
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching filtered products", error: error.message });
+    }
   }
 
   static async updateProduct(req, res) {
-    const product = req.body;
-    const { id } = req.params
-
-    const updatedProduct = await ProductsModel.updateProduct({ id, input: product })
-    res.json({ message: 'Product Updated', updatedProduct })
+    try {
+      const { id } = req.params;
+      const { name, description, price, categories, countInStock, rating, numReviews, isFeatured, brand } = req.body;
+  
+      // Obtén el producto actual para preservar las imágenes existentes si es necesario
+      const currentProduct = await ProductsModel.getById({ id });
+      if (!currentProduct) {
+        return res.status(404).json({ message: "Product not found." });
+      }
+  
+      let imagesToUpdate = currentProduct.images;
+      // Si hay nuevas imágenes para subir, reemplaza el array de imágenes existente
+      if (req.files && req.files.length > 0) {
+        const imageUrls = await uploadImagesToFirebase(req.files);
+        imagesToUpdate = imageUrls;
+      }
+  
+      const updatedProductData = {
+        name,
+        description,
+        brand,
+        price,
+        categories,
+        images: imagesToUpdate,
+        countInStock,
+        rating,
+        numReviews,
+        isFeatured,
+        dateUpdated: new Date() // Actualizar la fecha de actualización
+      };
+  
+      const updatedProduct = await ProductsModel.updateProduct({ id, input: updatedProductData });
+  
+      if (!updatedProduct) {
+        return res.status(404).json({ message: "Unable to update product." });
+      }
+  
+      res.json({ message: 'Product updated successfully', updatedProduct });
+    } catch (error) {
+      res.status(500).json({ message: "Error updating product", error: error.message });
+    }
   }
 
   static async deleteProduct(req, res) {
-    const { id } = req.params
-    const deletedProduct = await ProductsModel.deletedProduct({ id })
-    res.json({ message: 'Product Deleted', deletedProduct })
+    try {
+      const { id } = req.params;
+      const product = await ProductsModel.getById({ id });
+  
+      if (!product) {
+        return res.status(404).json({ message: "Product not found." });
+      }
+  
+      // Elimina las imágenes asociadas en Firebase Storage
+      const deleteImagePromises = product.images.map(imageUrl => {
+        // Extrae el nombre del archivo de la URL
+        const imageName = imageUrl.split('/').pop().split('?')[0];
+        return bucket.file(imageName).delete();
+      });
+  
+      await Promise.all(deleteImagePromises);
+  
+      // Elimina el producto de la base de datos
+      const deletionResult = await ProductsModel.deleteProduct({ id });
+  
+      if (!deletionResult) {
+        return res.status(404).json({ message: "Unable to delete product." });
+      }
+  
+      res.json({ message: 'Product deleted successfully' });
+    } catch (error) {
+      res.status(500).json({ message: "Error deleting product", error: error.message });
+    }
   }
 }
 
