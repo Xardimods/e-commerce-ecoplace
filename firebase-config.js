@@ -4,7 +4,7 @@ const serviceAccount = JSON.parse(Buffer.from(process.env.FIREBASE_ADMIN_SDK_JSO
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  storageBucket: 'ecoplaceapiimages.appspot.com'
+  storageBucket: 'gs://ecoplaceapiimages.appspot.com'
 })
 
 const bucket = admin.storage().bucket()
