@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { ProductsController } from '../controllers/products.js';
 import auth from '../middleware/auth.js';
 import { authRole }  from '../middleware/auth.js';
-import { uploadImages } from '../middlewares/uploadMiddleware';
+import { uploadImages } from '../middleware/multer.js';
 
 export const ProductsRouter = Router();
 

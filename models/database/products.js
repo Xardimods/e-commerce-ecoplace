@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { bucket } from './firebase-config';
+import { bucket } from '../config/firebase-config.js'
 
 const productSchema = mongoose.Schema({
   name: {
