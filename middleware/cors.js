@@ -9,15 +9,17 @@ const ACCEPTED_ORIGINS = [
   'http://localhost:4321'
 ]
 
-const corsOptions = {
+export const corsMiddleware = ({ acceptedOrigins = ACCEPTED_ORIGINS } = {}) => cors({
   origin: (origin, callback) => {
-    if (!origin || ACCEPTED_ORIGINS.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
+    if (acceptedOrigins.includes(origin)) {
+      return callback(null, true)
     }
-  },
-  credentials: true,
-};
 
-export const corsMiddleware = cors(corsOptions);
+    if (!origin) {
+      return callback(null, true)
+    }
+
+    return callback(new Error('Not allowed by CORS'))
+  },
+  credentials: true
+})
