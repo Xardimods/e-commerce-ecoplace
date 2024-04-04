@@ -50,7 +50,7 @@ export class UserController {
       if (user) {
         const token = await user.generateAuthToken()
         res.cookie('auth_token', token, {
-          httpOnly: false,  // segun lei esto previene el acceso desde JS en el navegador
+          httpOnly: true,  // segun lei esto previene el acceso desde JS en el navegador
           secure: process.env.NODE_ENV !== 'development', // en produccion, envia solo sobre https, tambien podemos usar el 'development'
           sameSite: 'strict', // me ayuda a mitigar ataques CSRF preguntar al profesor no entendo muy bien cuando investige
           maxAge: 24 * 60 * 60 * 1000 // duracion de la cookies (1 dia aqui.)
