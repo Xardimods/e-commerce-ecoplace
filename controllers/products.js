@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import { ProductsModel } from "../models/database/products.js";
 import { CategoriesModel } from "../models/database/categories.js";
 import { bucket } from '../models/config/firebase-config.js';
@@ -10,22 +11,27 @@ export class ProductsController {
 
   static async createProduct(req, res) {
     try {
-      const productData = req.body;
+      let productData = req.body;
       productData.seller = req.user._id; // Añadir el ID del vendedor (usuario) a productData
   
-      // Verificar el formato de categorías y su existencia
-      if (!Array.isArray(productData.categories) || !productData.categories.length) {
-        return res.status(400).json({ message: "Invalid categories format" });
+      if (productData.categories) {
+        const categoryIds = Array.isArray(productData.categories) ? productData.categories : [productData.categories];
+        const validCategoryIds = categoryIds.filter(id => mongoose.Types.ObjectId.isValid(id));
+  
+        if (validCategoryIds.length !== categoryIds.length) {
+          return res.status(400).json({ message: "One or more category IDs are invalid." });
+        }
+  
+        const categories = await Promise.all(validCategoryIds.map(id => CategoriesModel.getById({ id })));
+        
+        // Verificar si todas las categorías existen
+        if (categories.some(category => !category)) {
+          return res.status(400).json({ message: 'One or more categories not found' });
+        }
+  
+        // Actualizar productData.categories con los IDs válidos
+        productData.categories = categories.map(category => category._id);
       }
-  
-      const categories = await Promise.all(
-        productData.categories.map(id => CategoriesModel.getById({ id }))
-      );
-  
-      if (categories.some(category => !category)) {
-        return res.status(400).json({ message: 'Invalid Category' });
-      }
-  
       // Cargar imágenes a Firebase y obtener URLs si hay archivos de imagen
       let imageUrls = [];
       if (req.files && req.files.length > 0) {
