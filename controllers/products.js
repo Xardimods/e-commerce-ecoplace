@@ -119,7 +119,7 @@ export class ProductsController {
       await Promise.all(deleteImagePromises);
   
       // Elimina el producto de la base de datos
-      const deletionResult = await ProductsModel.deleteProduct({ id });
+      const deletionResult = await ProductsModel.deletedProduct({ id });
   
       if (!deletionResult) {
         return res.status(404).json({ message: "Unable to delete product." });

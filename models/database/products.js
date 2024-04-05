@@ -108,6 +108,11 @@ export class ProductsModel {
   }
 
   static async uploadImagesToFirebase(files) {
+    if (!files || files.length === 0) {
+      console.log("No files to upload to Firebase.");
+      return [];
+    }
+  
     const uploadPromises = files.map(file => {
       const fileName = `productos/${Date.now()}-${file.originalname}`;
       const fileUpload = bucket.file(fileName);
@@ -119,10 +124,15 @@ export class ProductsModel {
           }
         });
   
-        blobStream.on('error', (error) => reject(error));
+        blobStream.on('error', error => {
+          console.error("Error uploading file to Firebase:", error);
+          reject(error);
+        });
   
         blobStream.on('finish', () => {
+          // Asegúrate de que esta URL es accesible públicamente en la configuración de tu Firebase Storage
           const publicUrl = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURIComponent(fileName)}?alt=media`;
+          console.log("File uploaded to Firebase successfully:", publicUrl);
           resolve(publicUrl);
         });
   
