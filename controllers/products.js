@@ -29,7 +29,7 @@ export class ProductsController {
       // Cargar imágenes a Firebase y obtener URLs si hay archivos de imagen
       let imageUrls = [];
       if (req.files && req.files.length > 0) {
-        imageUrls = await uploadImagesToFirebase(req.files);
+        imageUrls = await ProductsModel.uploadImagesToFirebase(req.files);
       }
   
       // Añadir URLs de imágenes a los datos del producto
