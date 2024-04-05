@@ -1,5 +1,6 @@
 import { ProductsModel } from "../models/database/products.js";
 import { CategoriesModel } from "../models/database/categories.js";
+import { bucket } from '../models/config/firebase-config.js';
 
 export class ProductsController {
   static async getAll(req, res) {
@@ -43,31 +44,16 @@ export class ProductsController {
   }
 
   static async getById(req, res) {
-    try {
-      const { id } = req.params;
-      const product = await ProductsModel.getById({ id });
-      if (!product) {
-        return res.status(404).json({ message: "Product not found." });
-      }
-  
-      // Si el producto existe, se devuelve incluyendo las URLs de las imágenes
-      return res.json({
-        ...product.toObject(), // convertir Mongoose Document a un objeto simple.
-        message: "Product found successfully."
-      });
-    } catch (error) {
-      res.status(500).json({ message: "Error fetching product", error: error.message });
-    }
+    const { id } = req.params;
+    const product = await ProductsModel.getById({ id });
+    if (!product) res.status(404).json({ message: "Not found." });
+    return res.json(product);
   }
 
   static async getFilteredProducts(req, res) {
     const { name, categories, minPrice, maxPrice } = req.query;
-    try {
-      const filteredProducts = await ProductsModel.getFilteredProducts({ name, categories, minPrice, maxPrice });
-      res.json(filteredProducts);
-    } catch (error) {
-      res.status(500).json({ message: "Error fetching filtered products", error: error.message });
-    }
+    const filteredProducts = await ProductsModel.getFilteredProducts({ name, categories, minPrice, maxPrice });
+    res.json(filteredProducts);
   }
 
   static async updateProduct(req, res) {
