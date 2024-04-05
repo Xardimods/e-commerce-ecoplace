@@ -3,9 +3,15 @@ import { OrderModel } from "../models/database/orders.js"
 export class OrderController {
   static async createOrderFromCart(req, res) {
     const userId = req.user._id; // Asume que el middleware de autenticación añade el usuario a req.
-    const { methodPayment } = req.body; // Obtener methodPayment desde el cuerpo de la solicitud.
+    const { paymentDetails  } = req.body; // Obtener methodPayment desde el cuerpo de la solicitud.
+
+    const isPaymentValid = true; 
+
+    if (!isPaymentValid) {
+      return res.status(400).json({ message: "Detalles de pago inválidos." });
+    }
     try {
-      const orders = await OrderModel.createOrderFromCart(userId, methodPayment);
+      const orders = await OrderModel.createOrderFromCart(userId, paymentDetails );
       res.status(201).json(orders);
     } catch (error) {
       res.status(500).json({ message: "Error creating order from cart", error: error.message });

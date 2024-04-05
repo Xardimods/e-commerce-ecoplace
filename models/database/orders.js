@@ -16,6 +16,19 @@ const orderItemSchema = new mongoose.Schema({
   _id: false // Evita la creación de un _id para subdocumentos si no es necesario
 });
 
+const paymentDetailsSchema = new mongoose.Schema({
+  methodPayment: {
+    type: String,
+    required: true,
+    enum: ["CREDIT_CARD", "DEBIT_CARD"],
+  },
+  cardLastFourDigits: String, // Guardar solo los últimos cuatro dígitos
+  cardExpirationDate: String,
+  cardHolderName: String,
+}, {
+  _id: false
+});
+
 const orderSchema = new mongoose.Schema({
   items: [orderItemSchema],
   customer: {
@@ -26,24 +39,14 @@ const orderSchema = new mongoose.Schema({
   status: {
     type: String,
     required: true,
-    enum: ["Pending", "Paid", "Shipped", "Delivered", "Cancelled"],
-    default: "Pending",
+    enum: ["Pending", "Paid", "Shipped", "Cancelled"],
+    default: null,
   },
   trackingNumber: {
     type: String,
     default: "",
   },
-  methodPayment: {
-    type: String,
-    required: true,
-    enum: [
-      "CREDIT_CARD",
-      "DEBIT_CARD",
-      "PAYPAL",
-      "BANK_TRANSFER",
-      "CASH_ON_DELIVERY",
-    ],
-  },
+  paymentDetails: paymentDetailsSchema,
   createdAt: {
     type: Date,
     default: Date.now,
@@ -58,17 +61,17 @@ const Order = mongoose.model("Order", orderSchema);
 export { Order }
 
 export class OrderModel {
-  static async createOrderFromCart(userId, methodPayment) {
+  static async createOrderFromCart(userId, paymentDetails) {
     try {
-      const cart = await Cart.findOne({ User: userId })
-        .populate({
-          path: 'items.product',
-          // Aqui poblamos 'product' directamente
-        });
+      const cart = await Cart.findOne({ User: userId }).populate('items.product');// Aqui poblamos 'product' directamente
 
       if (!cart || cart.items.length === 0) {
         throw new Error('No items in cart.');
       }
+
+      const isPaymentSuccessful = true;
+
+      const status = isPaymentSuccessful ? 'Paid' : 'Pending';
 
       const orders = await Promise.all(cart.items.map(async (item) => {
         return await Order.create({
@@ -77,7 +80,8 @@ export class OrderModel {
             quantity: item.quantity,
           }],
           customer: userId,
-          methodPayment, 
+          paymentDetails, // Usar el nuevo esquema de detalles de pago
+          status, // Estado inicial de la orden
         });
       }));
 
@@ -93,33 +97,41 @@ export class OrderModel {
   static async getOrdersByUser(userId) {
     try {
       let orders = await Order.find({ customer: userId })
-        .populate('items.product', 'name price')
-        .populate('customer', 'name lastname street city country zip');
-  
-      // Calcular el total para cada orden
+          .populate('items.product', 'name price')
+          .populate('customer', 'name lastname street city country zip');
+
+      // Asegurarse de manejar ítems cuyo producto ha sido eliminado
       orders = orders.map(order => {
-        const orderObject = order.toObject();
-  
-        // Calcular el total sumando el precio de cada producto multiplicado por su cantidad
-        const total = order.items.reduce((acc, item) => {
-          return acc + (item.product.price * item.quantity);
-        }, 0);
-  
-        orderObject.total = total; // Añadir el total calculado al objeto de la orden
-        return orderObject;
+          const orderObject = order.toObject();
+
+          let total = 0;
+          orderObject.items = orderObject.items.map(item => {
+              // Verifica si el producto existe antes de acceder a sus propiedades
+              const itemTotal = item.product ? item.quantity * item.product.price : 0;
+              total += itemTotal;
+              return {
+                  ...item,
+                  subtotal: itemTotal,
+                  product: item.product ? item.product : { name: "Product deleted", price: 0 }
+              };
+          });
+
+          orderObject.total = total;
+          return orderObject;
       });
-  
+
       return orders;
-      } catch (error) {
-        throw new Error('Error fetching orders: ' + error.message);
-      }
+    } catch (error) {
+        console.error("Error fetching orders:", error);
+        throw error;
+    }
   }
 
   static async getOrderById(orderId) {
     try {
     const order = await Order.findById(orderId)
       .populate('items.product', 'name price')
-      .populate('customer', 'name lastname street city country zip');
+      .populate('customer', 'name lastname street city country zip paymentDetails');
 
     // Verifica si la orden existe antes de intentar acceder a sus propiedades
     if (!order) {
