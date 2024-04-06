@@ -1,20 +1,71 @@
 import { OrderModel } from "../models/database/orders.js"
-
+import stripe from  '../models/config/stripConfig.js'
+import { CartModel } from '../models/database/carts.js'
 export class OrderController {
   static async createOrderFromCart(req, res) {
-    const userId = req.user._id; // Asume que el middleware de autenticación añade el usuario a req.
-    const { paymentDetails  } = req.body; // Obtener methodPayment desde el cuerpo de la solicitud.
+    const userId = req.user._id;
+    const { paymentMethodId } = req.body;
 
-    const isPaymentValid = true; 
-
-    if (!isPaymentValid) {
-      return res.status(400).json({ message: "Detalles de pago inválidos." });
-    }
     try {
-      const orders = await OrderModel.createOrderFromCart(userId, paymentDetails );
-      res.status(201).json(orders);
+      // Suponemos que ya tienes una manera de calcular el total del carrito aquí
+      const { total, cartItems } = await CartModel.calculateCartTotal(userId);
+
+      // Crear el PaymentIntent con Stripe
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: total * 100, // Asume que total ya está en dólares, convierte a centavos
+        currency: 'usd',
+        payment_method: paymentMethodId,
+        confirm: true,
+      });
+
+      if (paymentIntent.status === 'succeeded') {
+        // Suponemos que el método createOrderFromCart realiza la creación de la orden y actualiza el estado del carrito internamente
+        const orders = await OrderModel.createOrderFromCart(userId, cartItems, {
+          methodPayment: "CREDIT_CARD",
+          cardLastFourDigits: paymentIntent.charges.data[0].payment_method_details.card.last4,
+          // Aquí incluirías el resto de los detalles de pago obtenidos
+        });
+
+        res.status(201).json(orders);
+      } else {
+        res.status(400).json({ message: "El pago no pudo ser procesado." });
+      }
     } catch (error) {
-      res.status(500).json({ message: "Error creating order from cart", error: error.message });
+      console.error("Error al crear la orden desde el carrito:", error);
+      res.status(500).json({ message: "Error al crear la orden desde el carrito", error: error.message });
+    }
+  }
+
+  static async createCheckoutSession(req, res) {
+    try {
+      const userId = req.user._id; // Asume autenticación
+      const cart = await CartModel.getCartByUserId(userId); // Asume método existente que devuelve el carrito del usuario
+
+      const lineItems = cart.items.map(item => {
+        return {
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: item.product.name,
+            },
+            unit_amount: item.price * 100,
+          },
+          quantity: item.quantity,
+        };
+      });
+
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        line_items: lineItems,
+        mode: 'payment',
+        success_url: `http://localhost:3001//success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `http://localhost:3001//cancel`,
+      });
+
+      res.json({ sessionId: session.id });
+    } catch (error) {
+      console.error('Error creating checkout session', error);
+      res.status(500).send('Error creating checkout session');
     }
   }
 
