@@ -1,5 +1,6 @@
 import { UserModel } from "../models/database/users.js"
 import { RoleModel } from "../models/database/roles.js"
+import { sendMail } from "../services/mail/nodemailer.js";
 
 export class UserController {
   static async getUser(req, res) {
@@ -19,13 +20,14 @@ export class UserController {
         role: role._id,
       };
       const userCreated = await UserModel.createUser(userData);
+      sendMail(req.body.email, "User Created", "Welcome to EcoPlace!");
       res.status(201).send(userCreated);
     } catch (error) {
       res.status(400).send({ error: error.message });
     }
   }
 
-  static async updateUser(req, res) { 
+  static async updateUser(req, res) {
     try {
       const user = await UserModel.updateUser(req.user._id, req.body)
       res.json(user);
@@ -34,7 +36,7 @@ export class UserController {
     }
   }
 
-  static async deleteUser(req, res) { 
+  static async deleteUser(req, res) {
     try {
       await UserModel.deleteUser(req.user._id);
       res.send({ message: 'User eliminated succesfull.' })
@@ -75,7 +77,7 @@ export class UserController {
     }
   }
 
-  static async logAuthAllUser(req, res) { 
+  static async logAuthAllUser(req, res) {
     try {
       await UserModel.logAuthAllUser(req.user);
       res.status(200).send({ message: 'All sessions have been closed successfully.' })
