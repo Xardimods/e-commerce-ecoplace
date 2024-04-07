@@ -1,34 +1,20 @@
 import { OrderModel } from "../models/database/orders.js"
 import stripe from  '../models/config/stripConfig.js'
 import { CartModel } from '../models/database/carts.js'
+
 export class OrderController {
   static async createOrderFromCart(req, res) {
     const userId = req.user._id;
-    const { paymentMethodId } = req.body;
+    const sessionId = req.body.sessionId; //ID de la sesión de checkout
 
     try {
-      // Suponemos que ya tienes una manera de calcular el total del carrito aquí
-      const { total, cartItems } = await CartModel.calculateCartTotal(userId);
-
-      // Crear el PaymentIntent con Stripe
-      const paymentIntent = await stripe.paymentIntents.create({
-        amount: total * 100, // Asume que total ya está en dólares, convierte a centavos
-        currency: 'usd',
-        payment_method: paymentMethodId,
-        confirm: true,
-      });
-
-      if (paymentIntent.status === 'succeeded') {
-        // Suponemos que el método createOrderFromCart realiza la creación de la orden y actualiza el estado del carrito internamente
-        const orders = await OrderModel.createOrderFromCart(userId, cartItems, {
-          methodPayment: "CREDIT_CARD",
-          cardLastFourDigits: paymentIntent.charges.data[0].payment_method_details.card.last4,
-          // Aquí incluirías el resto de los detalles de pago obtenidos
-        });
-
-        res.status(201).json(orders);
+      const session = await stripe.checkout.sessions.retrieve(sessionId);
+      if (session.payment_status === 'paid') {
+          const paymentMethodId = session.payment_method;
+          const orders = await OrderModel.createOrderFromCart(userId, paymentMethodId);
+          res.status(201).json(orders);
       } else {
-        res.status(400).json({ message: "El pago no pudo ser procesado." });
+        return res.status(400).json({ message: "El pago no pudo ser procesado." });
       }
     } catch (error) {
       console.error("Error al crear la orden desde el carrito:", error);
@@ -58,14 +44,24 @@ export class OrderController {
         payment_method_types: ['card'],
         line_items: lineItems,
         mode: 'payment',
-        success_url: `http://localhost:3001/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `http://localhost:3001/cancel`,
+        success_url: `${req.headers.origin}/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${req.headers.origin}/cancel`,
       });
 
       res.json({ sessionId: session.id });
     } catch (error) {
       console.error('Error creating checkout session', error);
       res.status(500).send('Error creating checkout session');
+    }
+  }
+
+  static async verifyCheckoutSession(req, res) {
+    const sessionId = req.params.sessionId;
+    try {
+      const session = await stripe.checkout.sessions.retrieve(sessionId);
+      res.json(session);
+    } catch (error) {
+      res.status(400).json({ error: error.message });
     }
   }
 

@@ -5,8 +5,9 @@ import { authRole } from '../middleware/auth.js'
 
 export const OrderRouter = Router()
 
-OrderRouter.post('/', auth, OrderController.createOrderFromCart)
 OrderRouter.post('/create-checkout-session', auth, OrderController.createCheckoutSession)
+OrderRouter.get('/checkout-session/:sessionId', auth, OrderController.verifyCheckoutSession);
+OrderRouter.post('/', auth, OrderController.createOrderFromCart)
 OrderRouter.get('/all', auth, authRole(['Admin']), OrderController.getAllOrders)
 OrderRouter.get('/me', auth, OrderController.getUserOrders)
 OrderRouter.get('/:orderId', auth, OrderController.getOrder)

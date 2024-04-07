@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import { Cart } from './carts.js';
 import stripe from '../config/stripConfig.js'
+import { never } from 'zod';
 
 const orderItemSchema = new mongoose.Schema({
   product: {
@@ -76,8 +77,9 @@ export class OrderModel {
         amount: totalAmount, // Calcula el total del carrito
         currency: 'usd',
         payment_method: paymentMethodId,
-        confirmation_method: 'automatic',
         confirm: true,
+        automatic_payment_methods: {enabled: true},
+        return_url: 'http://localhost:3001/success'
       });
       
 
