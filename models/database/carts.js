@@ -62,17 +62,6 @@ export class CartModel {
     return cart.populate({ path: 'items.product', select: 'name _id description price' });
   }
 
-  static async calculateCartTotal(userId) {
-    // Encuentra el carrito del usuario
-    const cart = await Cart.findOne({ User: userId }).populate('items.product');
-    if (!cart || cart.items.length === 0) {
-      throw new Error("El carrito está vacío.");
-    }
-    // Calcula el total
-    const total = cart.items.reduce((sum, item) => sum + item.quantity * item.product.price, 0);
-    return { total, cartItems: cart.items };
-  }
-
   static async getCartByUserId(userId) {
     try {
       // Recuperar el carrito y poblar los datos del producto
