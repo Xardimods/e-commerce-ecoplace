@@ -7,7 +7,8 @@ const ACCEPTED_ORIGINS = [
   'https://movies.com',
   'https://midu.dev',
   'https://ecoplace.3.us-1.fl0.io',
-  'https://ecoplaceapi-dev-eqsz.4.us-1.fl0.io'
+  'https://ecoplaceapi-dev-eqsz.4.us-1.fl0.io',
+  'ecoplaceapiimages.appspot.com'
 ]
 
 export const corsMiddleware = ({ acceptedOrigins = ACCEPTED_ORIGINS } = {}) => cors({
