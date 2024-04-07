@@ -3,6 +3,7 @@ import cors from 'cors'
 const ACCEPTED_ORIGINS = [
   'http://localhost:8080',
   'http://localhost:3000',
+  'http://localhost:3001',
   'http://localhost:4321',
   'https://movies.com',
   'https://midu.dev',
@@ -25,7 +26,7 @@ export const corsMiddleware = ({ acceptedOrigins = ACCEPTED_ORIGINS } = {}) => c
   },
   credentials: true,
   // Métodos HTTP permitidos
-  methods: ['GET', 'POST', 'OPTIONS', 'PATCH', 'DELETE'],
+  methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'PATCH', 'DELETE'],
   // Cabeceras permitidas en las solicitudes
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
   // Cabeceras expuestas en las respuestas al cliente
