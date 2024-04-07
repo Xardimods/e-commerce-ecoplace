@@ -3,22 +3,37 @@ import stripe from  '../models/config/stripConfig.js'
 import { CartModel } from '../models/database/carts.js'
 
 export class OrderController {
-  static async createOrderFromCart(req, res) {
+  static async processOrder(req, res) {
     const userId = req.user._id;
-    const sessionId = req.body.sessionId; //ID de la sesión de checkout
+    const sessionId = req.body.sessionId; // Asumiendo que el ID de la sesión de Stripe viene en el cuerpo de la solicitud
 
     try {
       const session = await stripe.checkout.sessions.retrieve(sessionId);
-      if (session.payment_status === 'paid') {
-          const paymentMethodId = session.payment_method;
-          const orders = await OrderModel.createOrderFromCart(userId, paymentMethodId);
-          res.status(201).json(orders);
-      } else {
-        return res.status(400).json({ message: "El pago no pudo ser procesado." });
+
+      // Primero, verifica que el estado del pago sea 'paid'.
+      if (session.payment_status !== 'paid') {
+        return res.status(400).json({ message: 'El pago no fue completado exitosamente.' });
       }
+
+      // Aquí construyes los paymentDetails basándote en la sesión de Stripe.
+      // Asegúrate de ajustar estos valores según los datos reales que puedas obtener de Stripe y tu lógica de negocio.
+      const paymentDetails = {
+        paymentMethodId: session.payment_method_types[0], // Ejemplo: 'card'
+        amountPaid: session.amount_total,
+        cardLastFourDigits: '****', // Stripe no proporciona esto en la sesión; necesitarás manejarlo de otra manera si es necesario.
+        cardExpirationDate: 'MM/AA', // Ejemplo ficticio
+        cardHolderName: 'Nombre Apellido', // Ejemplo ficticio
+      };
+
+      const order = await OrderModel.createOrderFromCart(userId, paymentDetails);
+      if (order) {
+        await OrderModel.emptyCart(userId); // Solo se llama si la orden se crea exitosamente
+      }      
+
+      res.status(201).json(order);
     } catch (error) {
-      console.error("Error al crear la orden desde el carrito:", error);
-      res.status(500).json({ message: "Error al crear la orden desde el carrito", error: error.message });
+      console.error('Error processing the order:', error);
+      res.status(500).json({ success: false, message: 'Error processing the order', error: error.message });
     }
   }
 
