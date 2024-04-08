@@ -48,12 +48,13 @@ export class UserController {
   static async logInUser(req, res) {
     try {
       const { email, password } = req.body;
-      const user = await UserModel.logInUser({ email, password })
+      const {user, roleName} = await UserModel.logInUser({ email, password })
       if (user) {
         const token = await user.generateAuthToken();
         res.status(200).json({
           message: "Login successful",
           token, // Envía el token como parte de la respuesta
+          role: roleName,
           user: {
             email: user.email,
             name: user.name,

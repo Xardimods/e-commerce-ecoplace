@@ -10,6 +10,6 @@ UserRouter.post('/login', UserController.logInUser);
 UserRouter.post('/logout', auth, UserController.logOutUser);
 UserRouter.post('/logout-all', auth, UserController.logAuthAllUser);
 
-UserRouter.get('/me', auth, authRole(['Customer']), UserController.getUser);
-UserRouter.patch('/me', auth, authRole(['Customer']), UserController.updateUser);
+UserRouter.get('/me', auth, authRole(['Customer', 'Seller', 'Admin']), UserController.getUser);
+UserRouter.patch('/me', auth, authRole(['Customer', 'Seller', 'Admin']), UserController.updateUser);
 UserRouter.delete('/me', auth, authRole(['Customer']), UserController.deleteUser);

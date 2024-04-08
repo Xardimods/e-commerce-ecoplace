@@ -171,7 +171,7 @@ export class UserModel {
   }
 
   static async logInUser({ email, password }) {
-    const user = await User.findOne({ email })
+    const user = await User.findOne({ email }).populate('role')
     if (!user) {
       throw new Error('Credenciales incorrectas')
     }
@@ -179,7 +179,8 @@ export class UserModel {
     if (!isMatch) {
       throw new Error('Credenciales incorrectas')
     }
-    return user
+
+    return {user, roleName: user.role.roleName}
   }
 
   static async logOutUser(user, token) { 
