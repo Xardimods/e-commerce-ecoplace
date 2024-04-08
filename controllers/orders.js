@@ -1,6 +1,7 @@
 import { OrderModel } from "../models/database/orders.js"
 import stripe from  '../models/config/stripConfig.js'
 import { CartModel } from '../models/database/carts.js'
+import { sendMail } from "../services/mail/nodemailer.js";
 
 export class OrderController {
   static async processOrder(req, res) {
@@ -26,6 +27,16 @@ export class OrderController {
       };
 
       const order = await OrderModel.createOrderFromCart(userId, paymentDetails);
+
+      let htmlContent = `<h1>Orden Creada</h1>`;
+        htmlContent += `<p>Detalle de tu orden:</p>`;
+        htmlContent += `<ul>`;
+
+        htmlContent += `<li>${session.payment_method_types[0]} - Precio: ${session.amount_total}</li>`;
+
+        htmlContent += `</ul>`;
+        htmlContent += `<p>Total Pagado: ${session.amount_total / 100}</p>`; // Asumiendo que amount_total está en centavos
+        sendMail(req.user.email, "Detalles de tu pago EcoPlace", htmlContent);
       if (order) {
         await OrderModel.emptyCart(userId); // Solo se llama si la orden se crea exitosamente
       }      

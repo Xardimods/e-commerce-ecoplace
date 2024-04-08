@@ -2,6 +2,8 @@ import nodemailer from 'nodemailer';
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
+  host: "smtp.gmail.com", //replace with your email provider
+  port: 587,
   auth: {
     type: 'OAuth2',
     user: process.env.MAIL_USERNAME,
@@ -12,13 +14,13 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-export function sendMail(email, subject, text) {
+export function sendMail(email, subject, html) {
   return new Promise((resolve, reject) => {
     const mailOptions = {
       from: process.env.MAIL_USERNAME,
       to: email,
       subject: subject,
-      text: text
+      html: html,
     };
 
     transporter.sendMail(mailOptions, function (error, info) {
