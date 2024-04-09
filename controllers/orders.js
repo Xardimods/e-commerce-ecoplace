@@ -28,6 +28,10 @@ export class OrderController {
 
       const order = await OrderModel.createOrderFromCart(userId, paymentDetails);
 
+      if (order) {
+        await OrderModel.emptyCart(userId); // Solo se llama si la orden se crea exitosamente
+      }     
+      
       let htmlContent = `<h1>Orden Creada</h1>`;
         htmlContent += `<p>Detalle de tu orden:</p>`;
         htmlContent += `<ul>`;
@@ -37,9 +41,6 @@ export class OrderController {
         htmlContent += `</ul>`;
         htmlContent += `<p>Total Pagado: ${session.amount_total / 100}</p>`; // Asumiendo que amount_total está en centavos
         sendMail(req.user.email, "Detalles de tu pago EcoPlace", htmlContent);
-      if (order) {
-        await OrderModel.emptyCart(userId); // Solo se llama si la orden se crea exitosamente
-      }      
 
       res.status(201).json(order);
     } catch (error) {
