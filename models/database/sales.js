@@ -4,35 +4,35 @@ import { Order } from './orders.js';
 const saleSchema = new mongoose.Schema({
   order: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Order", 
+    ref: "Order",
     required: true,
   },
   customer: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User", 
+    ref: "User",
     required: true,
   },
   seller: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User", 
+    ref: "User",
     required: true,
   },
   totalSalePrice: {
-    type: Number, 
+    type: Number,
     required: true,
   },
   status: {
-    type: String, 
+    type: String,
     required: true,
     default: "Completada",
   },
   paymentDetails: {
     method: {
-      type: String, 
+      type: String,
       required: true,
       enum: ["CREDIT_CARD", "DEBIT_CARD", "PAYPAL", "BANK_TRANSFER", "CASH_ON_DELIVERY"],
     },
-    transactionId: { type: String }, 
+    transactionId: { type: String },
   },
   dateOfSale: {
     type: Date,
@@ -46,8 +46,8 @@ export class SaleModel {
   static async getAllSales() {
     try {
       return await Sale.find().populate('order')
-      .populate('customer', 'name')
-      .populate('seller', 'name');
+        .populate('customer', 'name')
+        .populate('seller', 'name');
     } catch (error) {
       throw new Error('Error al obtener todas las ventas: ' + error.message);
     }
@@ -87,12 +87,20 @@ export class SaleModel {
     }
   }
 
+  static async getSalesById(id) {
+    try {
+      const sale = await Sale.findById({ _id: id }).populate('seller').populate('customer');
+      return sale;
+    } catch (error) {
+
+    }
+  }
 
   static async getSalesBySeller(sellerId) {
     try {
       return await Sale.find({ seller: sellerId })
-      .populate('order')
-      .populate('customer', 'name');
+        .populate('order', 'product')
+        .populate('customer', 'name');
     } catch (error) {
       throw new Error('Error al obtener ventas por vendedor: ' + error.message);
     }
