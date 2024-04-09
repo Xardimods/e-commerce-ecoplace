@@ -21,7 +21,7 @@ const saleSchema = new mongoose.Schema({
 const Sale = mongoose.model("Sale", saleSchema);
 
 export class SaleModel {
-  static async getAllSales(filter = {}) {
+  static async getAllSalesForAdmin(filter = {}) {
     // Buscar todas las órdenes con estado "Paid"
     const orders = await Order.find({ ...filter, status: 'Paid' }).populate({
       path: 'items.product',
@@ -41,7 +41,7 @@ export class SaleModel {
     }));
   }
 
-  static async getSalesBySeller(sellerId) {
+  static async getSalesBySellerforAdmin(sellerId) {
     const orders = await Order.find({ status: 'Paid' }).populate({
       path: 'items.product',
       match: { 'seller': sellerId }, // Filtrar los productos por el ID del vendedor
@@ -61,7 +61,7 @@ export class SaleModel {
     }));
   }
 
-  static async getSalesByOrderId(orderId) {
+  static async getSalesByOrderIdforAdmin(orderId) {
     const order = await Order.findOne({ _id: orderId, status: 'Paid' }).populate({
       path: 'items.product',
       select: 'name description images brand price quantity',
@@ -77,5 +77,47 @@ export class SaleModel {
     }
 
     return order.toObject();
+  }
+
+  // Methods for Sellers
+  static async getAllSalesForSeller(id) {
+    try {
+      const salesForSeller = await Order.find({}).populate({
+        path: 'items.product',
+        match: { 'seller': id }, // Filtrar los productos por el ID del vendedor
+        select: 'name description images brand price quantity',
+        populate: [
+          { path: 'seller', select: 'name lastname' },
+          { path: 'categories', select: 'categoryName -_id' }
+        ]
+      })
+        .populate('customer', 'name lastname -_id');
+      return salesForSeller;
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
+  static async getSalesByOrderIdforSeller(sellerId, orderId) {
+    try {
+      const order = await Order.findById({ _id: orderId }).populate({
+        path: 'items.product',
+        match: { 'seller': sellerId },
+        select: 'name description images brand price quantity',
+        populate: [
+          { path: 'seller', select: 'name lastname' },
+          { path: 'categories', select: 'categoryName -_id' }
+        ]
+      })
+        .populate('customer', 'name lastname -_id');
+
+      if (!order) {
+        throw new Error("Order not found");
+      }
+
+      return order;
+    } catch (error) {
+      throw new Error(error);
+    }
   }
 }
