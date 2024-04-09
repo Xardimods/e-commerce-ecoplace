@@ -14,7 +14,6 @@ This repository contains the backend code for an Ecommerce platform built with N
 ## Technologies Used
 
 - Node.js: JavaScript runtime environment.
-- TypeScript: JavaScript strong and static type superset.
 - Express.js: Web application framework for Node.js.
 - MongoDB: NoSQL database for storing data.
 - Mongoose: MongoDB object modeling for Node.js.
