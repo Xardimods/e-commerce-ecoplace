@@ -6,8 +6,6 @@ import {authRole}  from '../middleware/auth.js'
 export const SalesRouter = express.Router();
 
 
-SalesRouter.get('/', auth, authRole(['Admin', 'Seller']), SaleController.getAllSales);
-
-SalesRouter.post('/', auth, SaleController.createSale);
-
-SalesRouter.get('/seller/:sellerId', auth, authRole(['Admin', 'Seller']), SaleController.getSalesBySeller);
+SalesRouter.get('/', auth, authRole(['Admin']), SaleController.getAllSales);
+SalesRouter.get('/by-seller/:sellerId', auth, authRole(['Admin', 'Seller']), SaleController.getSalesBySeller);
+SalesRouter.get('/by-order/:orderId', auth, authRole(['Admin', 'Seller']), SaleController.getSalesByOrderId);
