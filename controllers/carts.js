@@ -18,9 +18,6 @@ export class CartController {
     try {
       const userId = req.user._id;
       const cart = await CartModel.getCartByUserId(userId);
-      if (!cart || cart.items.length === 0) {
-        return res.status(404).send({ message: 'The cart is empty.' });
-      }
       res.status(200).json(cart);
     } catch (error) {
       res.status(500).send({ error: 'Error getting cart.' });

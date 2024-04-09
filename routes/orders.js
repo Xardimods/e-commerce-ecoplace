@@ -10,5 +10,5 @@ OrderRouter.get('/checkout-session/:sessionId', auth, authRole(['Customer']), Or
 OrderRouter.post('/', auth, authRole(['Customer']), OrderController.processOrder)
 OrderRouter.get('/all', auth, authRole(['Admin']), OrderController.getAllOrders)
 OrderRouter.get('/me', auth, authRole(['Customer']), OrderController.getUserOrders)
-OrderRouter.get('/:orderId', auth, authRole(['Seller', 'Admin']), OrderController.getOrder)
+OrderRouter.get('/:orderId', auth, authRole(['Customer' ,'Seller', 'Admin']), OrderController.getOrder)
 OrderRouter.put('/:orderId', auth, authRole(['Admin']), OrderController.updateOrder)

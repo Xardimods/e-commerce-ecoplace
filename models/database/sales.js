@@ -1,108 +1,81 @@
 import mongoose from 'mongoose';
-import { Order } from './orders.js';
+import { Order } from '../database/orders.js';
 
 const saleSchema = new mongoose.Schema({
   order: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Order",
-    required: true,
-  },
-  customer: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
+    ref: 'Order',
+    required: true
   },
   seller: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
-  },
-  totalSalePrice: {
-    type: Number,
-    required: true,
-  },
-  status: {
-    type: String,
-    required: true,
-    default: "Completada",
-  },
-  paymentDetails: {
-    method: {
-      type: String,
-      required: true,
-      enum: ["CREDIT_CARD", "DEBIT_CARD", "PAYPAL", "BANK_TRANSFER", "CASH_ON_DELIVERY"],
-    },
-    transactionId: { type: String },
+    ref: 'User',
+    required: true
   },
   dateOfSale: {
     type: Date,
-    default: Date.now, // Fecha de la transacción de venta
-  },
+    default: Date.now
+  }
 });
 
 const Sale = mongoose.model("Sale", saleSchema);
 
 export class SaleModel {
-  static async getAllSales() {
-    try {
-      return await Sale.find().populate('order')
-        .populate('customer', 'name')
-        .populate('seller', 'name');
-    } catch (error) {
-      throw new Error('Error al obtener todas las ventas: ' + error.message);
-    }
-  }
+  static async getAllSales(filter = {}) {
+    // Buscar todas las órdenes con estado "Paid"
+    const orders = await Order.find({ ...filter, status: 'Paid' }).populate({
+      path: 'items.product',
+      select: 'name description images brand price quantity',
+      populate: [
+        { path: 'seller', select: 'name lastname' }, // Para incluir el seller
+        { path: 'categories', select: 'categoryName -_id' } // Asumiendo que el modelo de categoría tiene un campo 'categoryName'
+      ]
+    })
+      .populate('customer', 'name lastname -_id');
 
-  static async createSaleFromOrder(orderId) {
-    try {
-      const order = await Order.findById(orderId)
-        .populate({
-          path: 'items.product',
-          populate: {
-            path: 'seller', // Asumiendo que el modelo de Product tiene un campo 'seller'
-          }
-        })
-        .populate('customer', 'name lastname');
-
-      if (!order) throw new Error('Pedido no encontrado.');
-
-      // Opcional: Verifica el estado del pedido aquí
-
-      const sale = new Sale({
-        order: order._id,
-        customer: order.customer._id,
-        totalSalePrice: order.items.reduce((total, item) => total + item.product.price * item.quantity, 0),
-        status: 'Paid',
-        paymentDetails: {
-          method: order.methodPayment,
-          // Detalles adicionales según sea necesario
-        },
-        dateOfSale: new Date() // Ajustar según sea necesario
-      });
-
-      await sale.save();
-      return sale;
-    } catch (error) {
-      throw new Error('Error al crear la venta: ' + error.message);
-    }
-  }
-
-  static async getSalesById(id) {
-    try {
-      const sale = await Sale.findById({ _id: id }).populate('seller').populate('customer');
-      return sale;
-    } catch (error) {
-
-    }
+    // Convertir órdenes en "ventas" según tu lógica de negocio
+    return orders.map(order => ({
+      // Estructura los datos de la orden de la manera que consideres una "venta"
+      ...order.toObject(),
+      // Aquí puedes añadir o modificar la información según necesites
+    }));
   }
 
   static async getSalesBySeller(sellerId) {
-    try {
-      return await Sale.find({ seller: sellerId })
-        .populate('order', 'product')
-        .populate('customer', 'name');
-    } catch (error) {
-      throw new Error('Error al obtener ventas por vendedor: ' + error.message);
+    const orders = await Order.find({ status: 'Paid' }).populate({
+      path: 'items.product',
+      match: { 'seller': sellerId }, // Filtrar los productos por el ID del vendedor
+      select: 'name description images brand price quantity',
+      populate: [
+        { path: 'seller', select: 'name lastname' },
+        { path: 'categories', select: 'categoryName -_id' }
+      ]
+    })
+      .populate('customer', 'name lastname -_id');
+
+    // Filtrar órdenes que contengan al menos un producto del vendedor
+    const filteredOrders = orders.filter(order => order.items.some(item => item.product && item.product.seller._id.toString() === sellerId));
+
+    return filteredOrders.map(order => ({
+      ...order.toObject(),
+    }));
+  }
+
+  static async getSalesByOrderId(orderId) {
+    const order = await Order.findOne({ _id: orderId, status: 'Paid' }).populate({
+      path: 'items.product',
+      select: 'name description images brand price quantity',
+      populate: [
+        { path: 'seller', select: 'name lastname' },
+        { path: 'categories', select: 'categoryName -_id' }
+      ]
+    })
+      .populate('customer', 'name lastname -_id');
+
+    if (!order) {
+      return null; // O manejar como prefieras si la orden no existe o no está pagada
     }
+
+    return order.toObject();
   }
 }
