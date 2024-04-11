@@ -65,7 +65,7 @@ export { Product }
 
 export class ProductsModel {
   static async getAll() {
-    return await Product.find().populate({ path: 'categories', select: 'categoryName' });
+    return await Product.find().populate({ path: 'categories', select: 'categoryName' }).populate('seller', 'name lastname -_id');
   }
 
   static async getById({ id }) {

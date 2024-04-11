@@ -87,7 +87,7 @@ export class SaleModel {
         match: { 'seller': id }, // Filtrar los productos por el ID del vendedor
         select: 'name description images brand price quantity',
         populate: [
-          { path: 'seller', select: 'name lastname' },
+          { path: 'seller', select: 'name lastname -_id' },
           { path: 'categories', select: 'categoryName -_id' }
         ]
       })
