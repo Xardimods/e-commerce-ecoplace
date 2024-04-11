@@ -129,11 +129,15 @@ export class ProductsController {
         return res.status(404).json({ message: "Product not found." });
       }
 
-      // Elimina las imágenes asociadas en Firebase Storage
       const deleteImagePromises = product.images.map(imageUrl => {
-        // Extrae el nombre del archivo de la URL
-        const imageName = imageUrl.split('/').pop().split('?')[0];
-        return bucket.file(imageName).delete();
+        // Extrae la ruta completa del archivo de la URL y decodifica
+        const matches = imageUrl.match(/o\/([^?]+)/);
+        if (!matches || matches.length < 2) {
+          console.error("Invalid file URL format:", imageUrl);
+          return Promise.reject("Invalid file URL format.");
+        }
+        const filePath = decodeURIComponent(matches[1]);
+        return bucket.file(filePath).delete();
       });
 
       await Promise.all(deleteImagePromises);
