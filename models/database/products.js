@@ -65,7 +65,16 @@ export { Product }
 
 export class ProductsModel {
   static async getAll() {
-    return await Product.find().populate({ path: 'categories', select: 'categoryName' }).populate('seller', 'name lastname -_id');
+    return await Product.find().populate({ path: 'categories', select: 'categoryName' }).populate('seller', 'name lastname');
+  }
+
+  static async getAllProductsBySeller(id) {
+    try {
+      const products = await Product.find({ seller: id });
+      return products;
+    } catch (error) {
+      throw new Error(error);
+    }
   }
 
   static async getById({ id }) {
@@ -97,9 +106,9 @@ export class ProductsModel {
 
     // Realiza la búsqueda utilizando la consulta construida y popula las categorías
     return await Product.find(query)
-    .populate({ path: 'categories', select: 'categoryName -_id' })
-    .populate('seller', 'name')
-    .select('name description price images');
+      .populate({ path: 'categories', select: 'categoryName -_id' })
+      .populate('seller', 'name')
+      .select('name description price images');
   }
 
   static async createProduct({ input }) {
@@ -112,34 +121,34 @@ export class ProductsModel {
       console.log("No files to upload to Firebase.");
       return [];
     }
-  
+
     const uploadPromises = files.map(file => {
       const fileName = `productos/${Date.now()}-${file.originalname}`;
       const fileUpload = bucket.file(fileName);
-  
+
       return new Promise((resolve, reject) => {
         const blobStream = fileUpload.createWriteStream({
           metadata: {
             contentType: file.mimetype
           }
         });
-  
+
         blobStream.on('error', error => {
           console.error("Error uploading file to Firebase:", error);
           reject(error);
         });
-  
+
         blobStream.on('finish', () => {
           // Asegúrate de que esta URL es accesible públicamente en la configuración de tu Firebase Storage
           const publicUrl = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURIComponent(fileName)}?alt=media`;
           console.log("File uploaded to Firebase successfully:", publicUrl);
           resolve(publicUrl);
         });
-  
+
         blobStream.end(file.buffer);
       });
     });
-  
+
     return Promise.all(uploadPromises);
   }
 
