@@ -16,7 +16,7 @@ export class RoleModel{
   }
 
   static async getById({id}) {
-    return await Role.findById(id)
+    return await Role.findById(id).select('roleName')
   }
 
   static async getByName(roleName) {
