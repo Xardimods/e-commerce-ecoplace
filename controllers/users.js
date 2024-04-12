@@ -86,4 +86,35 @@ export class UserController {
       res.status(500).send({ message: 'Error closing all sessions.', error: error.message })
     }
   }
+
+  static async getAllUsers(req, res) {
+    try {
+      const users = await UserModel.findAllUsers();
+      res.status(200).json(users);
+    } catch (error) {
+      res.status(500).send({ message: 'Error fetching users', error: error.message });
+    }
+  }
+  
+  static async updateUserAdmin(req, res) {
+    try {
+      const { id } = req.params;
+      const updates = req.body;
+      const user = await UserModel.updateUser(id, updates);
+      res.status(200).json(user);
+    } catch (error) {
+      res.status(400).send({ message: error.message });
+    }
+  }
+
+  static async getUserById(req, res) {
+    try {
+      const userId = req.params.id; // Asume que el ID viene como parámetro de la URL
+      const user = await UserModel.findUserById(userId);
+      res.status(200).json(user);
+    } catch (error) {
+      res.status(404).send({ message: error.message });
+    }
+  }
 }
+

@@ -192,4 +192,51 @@ export class UserModel {
     user.tokens = []
     await user.save()
   }
+
+  static async findAllUsers() {
+    try {
+      return await User.find().populate('role', 'roleName');
+    } catch (error) {
+      throw new Error('Error fetching users: ' + error.message);
+    }
+  }
+
+  static async updateUser(userId, updates) { 
+    try {
+      const user = await User.findById(userId)
+      if (!user) {
+        throw new Error('Usuario no encontrado')
+      }
+  
+      const allowedUpdates = ['name', 'lastname', 'email', 'password', 'phone', 'street', 'city', 'country', 'zip']
+      const updateKeys = Object.keys(updates)
+  
+      const isValidOperation = updateKeys.every((update) => allowedUpdates.includes(update))
+  
+      if (!isValidOperation) {
+        throw new Error('Actualizaciones inválidas')
+      }
+  
+      updateKeys.forEach((update) => user[update] = updates[update])
+      await user.save()
+  
+      return user
+    } catch (error) {
+      throw new Error(error.message)
+    }
+  }
+
+  static async findUserById(userId) {
+    try {
+      const user = await User.findById(userId).populate('role', 'roleName');
+      if (!user) {
+        throw new Error('Usuario no encontrado');
+      }
+      return user;
+    } catch (error) {
+      throw new Error('Error fetching user: ' + error.message);
+    }
+  }
+
 }
+
