@@ -15,8 +15,10 @@ const saleSchema = new mongoose.Schema({
   dateOfSale: {
     type: Date,
     default: Date.now
-  }
-});
+  },
+  }, {
+    timestamps: true // Aprovecha la creación automática de campos createdAt y updatedAt
+  });
 
 const Sale = mongoose.model("Sale", saleSchema);
 
