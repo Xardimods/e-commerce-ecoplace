@@ -201,31 +201,6 @@ export class UserModel {
     }
   }
 
-  static async updateUser(userId, updates) { 
-    try {
-      const user = await User.findById(userId)
-      if (!user) {
-        throw new Error('Usuario no encontrado')
-      }
-  
-      const allowedUpdates = ['name', 'lastname', 'email', 'password', 'phone', 'street', 'city', 'country', 'zip']
-      const updateKeys = Object.keys(updates)
-  
-      const isValidOperation = updateKeys.every((update) => allowedUpdates.includes(update))
-  
-      if (!isValidOperation) {
-        throw new Error('Actualizaciones inválidas')
-      }
-  
-      updateKeys.forEach((update) => user[update] = updates[update])
-      await user.save()
-  
-      return user
-    } catch (error) {
-      throw new Error(error.message)
-    }
-  }
-
   static async findUserById(userId) {
     try {
       const user = await User.findById(userId).populate('role', 'roleName');

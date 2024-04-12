@@ -95,17 +95,6 @@ export class UserController {
       res.status(500).send({ message: 'Error fetching users', error: error.message });
     }
   }
-  
-  static async updateUserAdmin(req, res) {
-    try {
-      const { id } = req.params;
-      const updates = req.body;
-      const user = await UserModel.updateUser(id, updates);
-      res.status(200).json(user);
-    } catch (error) {
-      res.status(400).send({ message: error.message });
-    }
-  }
 
   static async getUserById(req, res) {
     try {

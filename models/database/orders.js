@@ -1,7 +1,5 @@
 import mongoose from 'mongoose';
 import { Cart } from './carts.js';
-import stripe from '../config/stripConfig.js'
-import { never } from 'zod';
 
 const orderItemSchema = new mongoose.Schema({
   product: {
@@ -165,7 +163,7 @@ export class OrderModel {
   static async getAllOrders() {  // Solo funcionara con los Admins
     try {
       const orders = await Order.find()
-      .populate('items.product', 'name price')
+      .populate('items.product', 'name price quantity')
       .populate('customer', 'name lastname');
       return orders;
     } catch (error) {
