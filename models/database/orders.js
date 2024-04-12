@@ -110,7 +110,7 @@ export class OrderModel {
     try {
       let orders = await Order.find({ customer: userId })
           .populate('items.product', 'name price')
-          .populate('customer', 'name lastname street city country zip');
+          .populate('customer', 'name lastname street city country zip paymentDetails');
 
       // Asegurarse de manejar ítems cuyo producto ha sido eliminado
       orders = orders.map(order => {
