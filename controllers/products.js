@@ -90,7 +90,7 @@ export class ProductsController {
       let imagesToUpdate = currentProduct.images;
       // Si hay nuevas imágenes para subir, reemplaza el array de imágenes existente
       if (req.files && req.files.length > 0) {
-        const imageUrls = await uploadImagesToFirebase(req.files);
+        const imageUrls = await ProductsModel.uploadImagesToFirebase(req.files);
         imagesToUpdate = imageUrls;
       }
 
