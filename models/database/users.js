@@ -203,7 +203,9 @@ export class UserModel {
 
   static async findUserById(userId) {
     try {
-      const user = await User.findById(userId).populate('role', 'roleName');
+      const user = await User.findById(userId)
+      .select('-_id -__v -bills -insights')
+      .populate('role', 'roleName');
       if (!user) {
         throw new Error('Usuario no encontrado');
       }
@@ -213,5 +215,27 @@ export class UserModel {
     }
   }
 
+  static async adminUpdateUser(userId, updates) {
+    try {
+      const user = await User.findById(userId);
+      if (!user) {
+        throw new Error('Usuario no encontrado');
+      }
+
+      const allowedUpdates = ['name', 'lastname', 'email', 'phone', 'street', 'city', 'country', 'zip', 'role'];
+      const updateKeys = Object.keys(updates);
+
+      updateKeys.forEach(key => {
+        if (allowedUpdates.includes(key)) {
+          user[key] = updates[key];
+        }
+      });
+
+      await user.save();
+      return user;
+    } catch (error) {
+      throw new Error('Error updating user by admin: ' + error.message);
+    }
+  }
 }
 

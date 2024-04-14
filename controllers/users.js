@@ -105,5 +105,17 @@ export class UserController {
       res.status(404).send({ message: error.message });
     }
   }
+
+  static async adminUpdateUser(req, res) {
+    const { id } = req.params; // Obtiene el ID del usuario desde la URL
+    const updates = req.body;
+
+    try {
+      const updatedUser = await UserModel.adminUpdateUser(id, updates);
+      res.status(200).json(updatedUser);
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  }
 }
 
