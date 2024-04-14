@@ -64,16 +64,24 @@ export class ProductsController {
   }
 
   static async getById(req, res) {
-    const { id } = req.params;
-    const product = await ProductsModel.getById({ id });
-    if (!product) res.status(404).json({ message: "Not found." });
-    return res.json(product);
+    try {
+      const { id } = req.params;
+      const product = await ProductsModel.getById({ id });
+      if (!product) res.status(404).json({ message: "Not found." });
+      return res.json(product);
+    } catch (error) {
+      res.status(404).json({ message: "product no found", error: error.message });
+    }
   }
 
   static async getFilteredProducts(req, res) {
-    const { name, categories, minPrice, maxPrice } = req.query;
-    const filteredProducts = await ProductsModel.getFilteredProducts({ name, categories, minPrice, maxPrice });
-    res.json(filteredProducts);
+    try {
+      const { name, categories, minPrice, maxPrice } = req.query;
+      const filteredProducts = await ProductsModel.getFilteredProducts({ name, categories, minPrice, maxPrice });
+      res.json(filteredProducts);
+    } catch (error) {
+      res.status(404).json({ message: "product no found", error: error.message });
+    }
   }
 
   static async updateProduct(req, res) {
