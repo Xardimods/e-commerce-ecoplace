@@ -12,6 +12,7 @@ import { RolesRouter } from './routes/roles.js';
 import { CartRouter } from './routes/carts.js';
 import { OrderRouter } from './routes/orders.js';
 import { SalesRouter } from './routes/sales.js';
+import { StatsRouter } from './routes/stats.js';
 
 dotenv.config();
 
@@ -33,6 +34,7 @@ app.use('/roles', RolesRouter);
 app.use('/carts', CartRouter);
 app.use('/orders', OrderRouter);
 app.use('/sales', SalesRouter);
+app.use('/stats', StatsRouter);
 
 app.get('/', (req, res) => {
   res.json({

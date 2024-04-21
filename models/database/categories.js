@@ -10,6 +10,8 @@ const categorySchema = new mongoose.Schema({
 
 const Category = mongoose.model("Category", categorySchema);
 
+export { Category }
+
 export class CategoriesModel {
   static async getAll() {
     return await Category.find();   

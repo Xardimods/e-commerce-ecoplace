@@ -22,6 +22,8 @@ const saleSchema = new mongoose.Schema({
 
 const Sale = mongoose.model("Sale", saleSchema);
 
+export { Sale }
+
 export class SaleModel {
   static async getAllSalesForAdmin(filter = {}) {
     // Buscar todas las órdenes con estado "Paid"
