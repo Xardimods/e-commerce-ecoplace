@@ -70,7 +70,7 @@ export class ProductsModel {
 
   static async getAllProductsBySeller(id) {
     try {
-      const products = await Product.find({ seller: id });
+      const products = await Product.find({ seller: id }).populate({ path: 'categories', select: 'categoryName' });
       return products;
     } catch (error) {
       throw new Error(error);
