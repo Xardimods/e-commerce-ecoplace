@@ -20,7 +20,21 @@ export class UserController {
         role: role._id,
       };
       const userCreated = await UserModel.createUser(userData);
-      sendMail(req.body.email, "User Created", "Welcome to EcoPlace!");
+
+      const emailContext = {
+        title: 'Welcome to Ecoplace!',
+        userName: `${userCreated.name} ${userCreated.lastname}`,
+        userEmail: userCreated.email,
+        userPhone: userCreated.phone,
+        userStreet: userCreated.street,
+        userCity: userCreated.city,
+        userCountry: userCreated.country,
+        userZip: userCreated.zip,
+        year: new Date().getFullYear(),
+      }
+
+      sendMail(req.body.email, "User Created", "register_account", emailContext);
+
       res.status(201).send(userCreated);
     } catch (error) {
       res.status(400).send({ error: error.message });

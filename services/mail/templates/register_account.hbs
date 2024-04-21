@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{title}}</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f6f6f6;
+    }
+    .container {
+      width: 80%;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    }
+    h1 {
+      color: #333;
+      text-align: center;
+    }
+    p {
+      color: #555;
+      line-height: 1.6;
+    }
+    .footer {
+      text-align: center;
+      color: #aaa;
+      font-size: 0.8em;
+      padding: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>{{title}}</h1>
+    <p>Hi {{userName}},</p>
+    <p>Welcome to Ecoplace! We're thrilled to have you with us.</p>
+    <p>Here's your account information:</p>
+    <ul>
+      <li><strong>Name:</strong> {{userName}}</li>
+      <li><strong>Email:</strong> {{userEmail}}</li>
+      <li><strong>Phone:</strong> {{userPhone}}</li>
+      <li><strong>Address:</strong> {{userStreet}}, {{userCity}}, {{userCountry}}, {{userZip}}</li>
+    </ul>
+    <p>Thanks for joining us. If you have any questions, feel free to reach out.</p>
+  </div>
+  <div class="footer">
+    © {{year}} Ecoplace. All rights reserved.
+  </div>
+</body>
+</html>

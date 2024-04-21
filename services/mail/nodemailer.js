@@ -1,4 +1,10 @@
 import nodemailer from 'nodemailer';
+import nodemailerExpressHandlebars from 'nodemailer-express-handlebars';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -14,13 +20,28 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-export function sendMail(email, subject, html) {
+const viewPath =  path.resolve(__dirname, './templates/');
+
+const handlebarOptions = {
+  viewEngine: {
+    extname: '.hbs',
+    layoutsDir: viewPath,
+    defaultLayout: false, 
+  },
+  viewPath,
+  extName: '.hbs',
+};
+
+transporter.use('compile', nodemailerExpressHandlebars(handlebarOptions));
+
+export function sendMail(email, subject, templateName, context) {
   return new Promise((resolve, reject) => {
     const mailOptions = {
       from: process.env.MAIL_USERNAME,
       to: email,
       subject: subject,
-      html: html,
+      template: templateName,
+      context,
     };
 
     transporter.sendMail(mailOptions, function (error, info) {
