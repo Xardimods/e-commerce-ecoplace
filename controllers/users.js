@@ -1,6 +1,21 @@
 import { UserModel } from "../models/database/users.js"
 import { RoleModel } from "../models/database/roles.js"
-import { sendMail } from "../services/mail/nodemailer.js";
+import { sendMail } from "../services/mail/nodemailer.js"
+import geoip from 'geoip-lite';
+
+//Funcion creada para traer el location mediante ip del user
+function getGeolocation(ipAddress) {
+  const geo = geoip.lookup(ipAddress);
+  if (geo) {
+    return {
+      country: geo.country, // Código del país (por ejemplo, "US")
+      region: geo.region, // Región (por ejemplo, "CA")
+      city: geo.city, // Ciudad
+      timezone: geo.timezone, // Zona horaria
+    };
+  }
+  return null;
+}
 
 export class UserController {
   static async getUser(req, res) {
@@ -65,6 +80,22 @@ export class UserController {
       const {user, roleName} = await UserModel.logInUser({ email, password })
       if (user) {
         const token = await user.generateAuthToken();
+
+        const ipAddress = req.ip;
+        const device = req.headers['user-agent']; // Información del dispositivo
+        const location = getGeolocation(ipAddress); 
+
+        const emailContext = {
+          userName: `${user.name} ${user.lastname}`,
+          ipAddress,
+          device,
+          location: location
+          ? `${location.city}, ${location.region}, ${location.country}`
+          : 'Unknown',
+        };
+
+        sendMail(user.email, "Login Notification", "login_notification", emailContext);
+
         res.status(200).json({
           message: "Login successful",
           token, // Envía el token como parte de la respuesta

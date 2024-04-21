@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>{{title}}</title>
+  <title>Login Notification</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       background-color: #f5f5f5;
+      color: #333;
       margin: 0;
       padding: 0;
-      color: #333;
     }
 
     .container {
@@ -64,21 +64,23 @@
 <body>
   <div class="container">
     <div class="header">
-      <h1>{{title}}</h1>
+      <h1>Login Notification</h1>
     </div>
     <div class="content">
-      <p>Hi {{userName}},</p>
-      <p class="info">Welcome to EcoPlace! We're excited to have you with us.</p>
-      <p class="info">Here are your account details:</p>
-      <ul class="info">
-        <li><strong>Email:</strong> {{userEmail}}</li>
-        <li><strong>Phone:</strong> {{userPhone}}</li>
-        <li><strong>Address:</strong> {{userStreet}}, {{userCity}}, {{userCountry}}, {{userZip}}</li>
-      </ul>
-      <p class="info">Thank you for joining. If you have any questions, feel free to reach out to us.</p>
+      <p>Hello, {{userName}}.</p>
+      <p class="info">This is to inform you that a login to your account was detected.</p>
+      <p class="info">Location: {{location}}</p>
+      <p class="info">IP Address: {{ipAddress}}</p>
+      <p class="info">Device: {{device}}</p>
+      <p class="info">
+        If this was you, you can ignore this email. If not, please secure your account and contact support immediately.
+      </p>
     </div>
     <div class="footer">
-      © {{year}} EcoPlace. All rights reserved.
+      <p>&copy; {{year}} EcoPlace. All rights reserved.</p>
+      <p>
+        If you have any questions, please <a href="mailto:support@ecoplace.com">contact us</a>.
+      </p>
     </div>
   </div>
 </body>
