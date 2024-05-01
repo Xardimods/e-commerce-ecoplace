@@ -31,22 +31,22 @@ export class OrderController {
       if (order) {
         await OrderModel.emptyCart(userId); // Solo se llama si la orden se crea exitosamente
       }
+      
+      // const emailContext = {
+      //   userName: `${req.user.name} ${req.user.lastname}`,
+      //   items: order.items.map(item => ({
+      //     productName: item.product.name,
+      //     quantity: item.quantity,
+      //     productPrice: item.product.price,
+      //   })),
+      //   totalAmount: order.paymentDetails.amountPaid / 100, // Asumiendo que está en centavos
+      //   paymentMethod: order.paymentDetails.paymentMethodId,
+      //   year: new Date().getFullYear(),
+      // }
+
+      // await sendMail(req.user.email, "Detalles de tu pago EcoPlace", "order_created", emailContext);
 
       res.status(201).json(order);
-      
-      const emailContext = {
-        userName: `${req.user.name} ${req.user.lastname}`,
-        items: order.items.map(item => ({
-          productName: item.product.name,
-          quantity: item.quantity,
-          productPrice: item.product.price,
-        })),
-        totalAmount: order.paymentDetails.amountPaid / 100, // Asumiendo que está en centavos
-        paymentMethod: order.paymentDetails.paymentMethodId,
-        year: new Date().getFullYear(),
-      }
-
-      await sendMail(req.user.email, "Detalles de tu pago EcoPlace", "order_created", emailContext);
     } catch (error) {
       console.error('Error processing the order:', error);
       res.status(500).json({ success: false, message: 'Error processing the order', error: error.message });
