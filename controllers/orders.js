@@ -28,6 +28,8 @@ export class OrderController {
 
       const order = await OrderModel.createOrderFromCart(userId, paymentDetails);
 
+      res.status(201).json(order);
+
       if (order) {
         await OrderModel.emptyCart(userId); // Solo se llama si la orden se crea exitosamente
       }
@@ -45,8 +47,6 @@ export class OrderController {
       }
 
       await sendMail(req.user.email, "Detalles de tu pago EcoPlace", "order_created", emailContext);
-
-      res.status(201).json(order);
     } catch (error) {
       console.error('Error processing the order:', error);
       res.status(500).json({ success: false, message: 'Error processing the order', error: error.message });
