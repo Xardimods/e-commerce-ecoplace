@@ -109,30 +109,32 @@ export class OrderModel {
   static async getOrdersByUser(userId) {
     try {
       let orders = await Order.find({ customer: userId })
-          .sort({ createdAt: -1 }) // Ordenar por fecha de creación descendente
+          .sort({ createdAt: -1 })
+          .limit(1)
           .populate('items.product', 'name price')
           .populate('customer', 'name lastname street city country zip paymentDetails');
 
-      if (orders.length === 0) {
-        return null; // Manejo en caso de no encontrar órdenes
-      }
+      // Asegurarse de manejar ítems cuyo producto ha sido eliminado
+      orders = orders.map(order => {
+          const orderObject = order.toObject();
 
-      const order = orders[0].toObject(); // Convertir a objeto si hay una orden
+          let total = 0;
+          orderObject.items = orderObject.items.map(item => {
+              // Verifica si el producto existe antes de acceder a sus propiedades
+              const itemTotal = item.product ? item.quantity * item.product.price : 0;
+              total += itemTotal;
+              return {
+                  ...item,
+                  subtotal: itemTotal,
+                  product: item.product ? item.product : { name: "Product deleted", price: 0 }
+              };
+          });
 
-      let total = 0;
-      order.items = order.items.map(item => {
-        const itemTotal = item.product ? item.quantity * item.product.price : 0;
-        total += itemTotal;
-        return {
-          ...item,
-          subtotal: itemTotal,
-          product: item.product ? item.product : { name: "Product deleted", price: 0 }
-        };
+          orderObject.total = total;
+          return orderObject;
       });
 
-      order.total = total; // Añadir el total calculado al objeto de la orden
-
-      return order; // Devuelve la última orden
+      return orders;
     } catch (error) {
         console.error("Error fetching orders:", error);
         throw error;
