@@ -110,7 +110,6 @@ export class OrderModel {
     try {
       let orders = await Order.find({ customer: userId })
           .sort({ createdAt: -1 })
-          .limit(1)
           .populate('items.product', 'name price')
           .populate('customer', 'name lastname street city country zip paymentDetails');
 
