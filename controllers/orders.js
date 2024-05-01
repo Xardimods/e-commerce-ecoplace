@@ -15,9 +15,7 @@ export class OrderController {
       if (session.payment_status !== 'paid') {
         return res.status(400).json({ message: 'El pago no fue completado exitosamente.' });
       }
-
-      // Aquí construyes los paymentDetails basándote en la sesión de Stripe.
-      // Asegúrate de ajustar estos valores según los datos reales que puedas obtener de Stripe y tu lógica de negocio.
+      
       const paymentDetails = {
         paymentMethodId: session.payment_method_types[0], // Ejemplo: 'card'
         amountPaid: session.amount_total,
@@ -30,21 +28,21 @@ export class OrderController {
 
       if (order) {
         await OrderModel.emptyCart(userId); // Solo se llama si la orden se crea exitosamente
-      }
-      
-      // const emailContext = {
-      //   userName: `${req.user.name} ${req.user.lastname}`,
-      //   items: order.items.map(item => ({
-      //     productName: item.product.name,
-      //     quantity: item.quantity,
-      //     productPrice: item.product.price,
-      //   })),
-      //   totalAmount: order.paymentDetails.amountPaid / 100, // Asumiendo que está en centavos
-      //   paymentMethod: order.paymentDetails.paymentMethodId,
-      //   year: new Date().getFullYear(),
-      // }
 
-      // await sendMail(req.user.email, "Detalles de tu pago EcoPlace", "order_created", emailContext);
+        const emailContext = {
+          userName: `${req.user.name} ${req.user.lastname}`,
+          items: order.items.map(item => ({
+            productName: item.product.name,
+            quantity: item.quantity,
+            productPrice: item.product.price,
+          })),
+          totalAmount: order.paymentDetails.amountPaid / 100, // Asumiendo que está en centavos
+          paymentMethod: order.paymentDetails.paymentMethodId,
+          year: new Date().getFullYear(),
+        }
+  
+        await sendMail(req.user.email, "Detalles de tu pago EcoPlace", "order_created", emailContext);
+      }
 
       res.status(201).json(order);
     } catch (error) {
