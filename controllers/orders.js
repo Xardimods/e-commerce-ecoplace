@@ -28,11 +28,11 @@ export class OrderController {
 
       const order = await OrderModel.createOrderFromCart(userId, paymentDetails);
 
-      res.status(201).json(order);
-
       if (order) {
         await OrderModel.emptyCart(userId); // Solo se llama si la orden se crea exitosamente
       }
+
+      res.status(201).json(order);
       
       const emailContext = {
         userName: `${req.user.name} ${req.user.lastname}`,
