@@ -44,7 +44,7 @@ export class OrderController {
         year: new Date().getFullYear(),
       }
 
-      sendMail(req.user.email, "Detalles de tu pago EcoPlace", "order_created", emailContext);
+      await sendMail(req.user.email, "Detalles de tu pago EcoPlace", "order_created", emailContext);
 
       res.status(201).json(order);
     } catch (error) {
