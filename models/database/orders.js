@@ -110,7 +110,6 @@ export class OrderModel {
     try {
       let orders = await Order.find({ customer: userId })
           .sort({ createdAt: -1 }) // Ordenar por fecha de creación descendente
-          .limit(1) // Limitar a solo una orden
           .populate('items.product', 'name price')
           .populate('customer', 'name lastname street city country zip paymentDetails');
 
