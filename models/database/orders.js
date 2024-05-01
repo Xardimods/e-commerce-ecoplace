@@ -109,32 +109,31 @@ export class OrderModel {
   static async getOrdersByUser(userId) {
     try {
       let orders = await Order.find({ customer: userId })
-          .sort({ createdAt: -1 })
-          .limit(1)
+          .sort({ createdAt: -1 }) // Ordenar por fecha de creación descendente
+          .limit(1) // Limitar a solo una orden
           .populate('items.product', 'name price')
           .populate('customer', 'name lastname street city country zip paymentDetails');
 
-      // Asegurarse de manejar ítems cuyo producto ha sido eliminado
-      orders = orders.map(order => {
-          const orderObject = order.toObject();
+      if (orders.length === 0) {
+        return null; // Manejo en caso de no encontrar órdenes
+      }
 
-          let total = 0;
-          orderObject.items = orderObject.items.map(item => {
-              // Verifica si el producto existe antes de acceder a sus propiedades
-              const itemTotal = item.product ? item.quantity * item.product.price : 0;
-              total += itemTotal;
-              return {
-                  ...item,
-                  subtotal: itemTotal,
-                  product: item.product ? item.product : { name: "Product deleted", price: 0 }
-              };
-          });
+      const order = orders[0].toObject(); // Convertir a objeto si hay una orden
 
-          orderObject.total = total;
-          return orderObject;
+      let total = 0;
+      order.items = order.items.map(item => {
+        const itemTotal = item.product ? item.quantity * item.product.price : 0;
+        total += itemTotal;
+        return {
+          ...item,
+          subtotal: itemTotal,
+          product: item.product ? item.product : { name: "Product deleted", price: 0 }
+        };
       });
 
-      return orders;
+      order.total = total; // Añadir el total calculado al objeto de la orden
+
+      return order; // Devuelve la última orden
     } catch (error) {
         console.error("Error fetching orders:", error);
         throw error;
