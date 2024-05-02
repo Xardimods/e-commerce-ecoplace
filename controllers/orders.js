@@ -7,14 +7,13 @@ export class OrderController {
   static async processOrder(req, res) {
     const userId = req.user._id;
     const sessionId = req.body.sessionId;
-
+  
     try {
       const session = await stripe.checkout.sessions.retrieve(sessionId);
       if (session.payment_status !== 'paid') {
         return res.status(400).json({ message: 'El pago no fue completado exitosamente.' });
       }
-
-      // Crear la orden desde el carrito
+  
       const paymentDetails = {
         paymentMethodId: session.payment_method_types[0],
         amountPaid: session.amount_total,
@@ -22,16 +21,13 @@ export class OrderController {
         cardExpirationDate: 'MM/AA',
         cardHolderName: 'Nombre Apellido',
       };
-
+  
       const order = await OrderModel.createOrderFromCart(userId, paymentDetails);
       if (!order) {
         return res.status(400).json({ message: 'No se pudo crear la orden.' });
       }
-
-      // Vaciar el carrito solo si la orden se crea exitosamente
+  
       await OrderModel.emptyCart(userId);
-
-      // Enviar email de confirmación
       const emailContext = {
         userName: `${req.user.name} ${req.user.lastname}`,
         items: order.items.map(item => ({
@@ -43,7 +39,7 @@ export class OrderController {
         paymentMethod: order.paymentDetails.paymentMethodId,
         year: new Date().getFullYear(),
       }
-
+  
       await sendMail(req.user.email, "Detalles de tu pago EcoPlace", "order_created", emailContext);
       res.status(201).json(order);
     } catch (error) {
