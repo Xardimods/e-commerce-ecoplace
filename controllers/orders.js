@@ -6,47 +6,46 @@ import { sendMail } from "../services/mail/nodemailer.js";
 export class OrderController {
   static async processOrder(req, res) {
     const userId = req.user._id;
-    const sessionId = req.body.sessionId; // Asumiendo que el ID de la sesión de Stripe viene en el cuerpo de la solicitud
+    const sessionId = req.body.sessionId;
 
     try {
       const session = await stripe.checkout.sessions.retrieve(sessionId);
-
-      // Primero, verifica que el estado del pago sea 'paid'.
       if (session.payment_status !== 'paid') {
         return res.status(400).json({ message: 'El pago no fue completado exitosamente.' });
       }
-      
+
+      // Crear la orden desde el carrito
       const paymentDetails = {
-        paymentMethodId: session.payment_method_types[0], // Ejemplo: 'card'
+        paymentMethodId: session.payment_method_types[0],
         amountPaid: session.amount_total,
-        cardLastFourDigits: '****', // Stripe no proporciona esto en la sesión; necesitarás manejarlo de otra manera si es necesario.
-        cardExpirationDate: 'MM/AA', // Ejemplo ficticio
-        cardHolderName: 'Nombre Apellido', // Ejemplo ficticio
+        cardLastFourDigits: '****',
+        cardExpirationDate: 'MM/AA',
+        cardHolderName: 'Nombre Apellido',
       };
 
       const order = await OrderModel.createOrderFromCart(userId, paymentDetails);
-
-      if (order) {
-        await OrderModel.emptyCart(userId); // Solo se llama si la orden se crea exitosamente
-
-        const emailContext = {
-          userName: `${req.user.name} ${req.user.lastname}`,
-          items: order.items.map(item => ({
-            productName: item.product.name,
-            quantity: item.quantity,
-            productPrice: item.product.price,
-          })),
-          totalAmount: order.paymentDetails.amountPaid / 100, // Asumiendo que está en centavos
-          paymentMethod: order.paymentDetails.paymentMethodId,
-          year: new Date().getFullYear(),
-        }
-  
-        await sendMail(req.user.email, "Detalles de tu pago EcoPlace", "order_created", emailContext);
-        res.status(201).json(order);
-      } else {
-        // Si no se pudo crear la orden, no se vacía el carrito.
-        res.status(400).json({ message: 'Error al crear la orden.' });
+      if (!order) {
+        return res.status(400).json({ message: 'No se pudo crear la orden.' });
       }
+
+      // Vaciar el carrito solo si la orden se crea exitosamente
+      await OrderModel.emptyCart(userId);
+
+      // Enviar email de confirmación
+      const emailContext = {
+        userName: `${req.user.name} ${req.user.lastname}`,
+        items: order.items.map(item => ({
+          productName: item.product.name,
+          quantity: item.quantity,
+          productPrice: item.product.price,
+        })),
+        totalAmount: order.paymentDetails.amountPaid / 100,
+        paymentMethod: order.paymentDetails.paymentMethodId,
+        year: new Date().getFullYear(),
+      }
+
+      await sendMail(req.user.email, "Detalles de tu pago EcoPlace", "order_created", emailContext);
+      res.status(201).json(order);
     } catch (error) {
       console.error('Error processing the order:', error);
       res.status(500).json({ success: false, message: 'Error processing the order', error: error.message });
