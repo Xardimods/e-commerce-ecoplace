@@ -43,6 +43,9 @@ export class OrderController {
   
         await sendMail(req.user.email, "Detalles de tu pago EcoPlace", "order_created", emailContext);
         res.status(201).json(order);
+      } else {
+        // Si no se pudo crear la orden, no se vacía el carrito.
+        res.status(400).json({ message: 'Error al crear la orden.' });
       }
     } catch (error) {
       console.error('Error processing the order:', error);
