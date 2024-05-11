@@ -4,6 +4,8 @@ const ACCEPTED_ORIGINS = [
   'http://localhost:8080',
   'http://localhost:3000',
   'http://localhost:3001',
+  'http://localhost:3001/sucess',
+  'http://localhost:3001/cancel',
   'http://localhost:4321',
   'http://34.201.92.59',
   'http://34.201.92.59/success',
