@@ -5,13 +5,14 @@ const ACCEPTED_ORIGINS = [
   'http://localhost:3000',
   'http://localhost:3001',
   'http://localhost:4321',
+  'http://34.201.92.59',
+  'https://ecoplace-api.zeabur.app',
+  'https://ecoplace.vercel.app',
   'https://movies.com',
   'https://midu.dev',
   'https://ecoplace.3.us-1.fl0.io',
   'https://ecoplaceapi-dev-eqsz.4.us-1.fl0.io',
-  'ecoplaceapiimages.appspot.com',
-  'https://ecoplace-api.zeabur.app',
-  'https://ecoplace.vercel.app'
+  'ecoplaceapiimages.appspot.com'
 ]
 
 export const corsMiddleware = ({ acceptedOrigins = ACCEPTED_ORIGINS } = {}) => cors({
