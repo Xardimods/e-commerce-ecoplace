@@ -22,12 +22,16 @@ export class OrderController {
         cardHolderName: 'Nombre Apellido',
       };
   
+      // Crear la orden pero no vaciar el carrito aún
       const order = await OrderModel.createOrderFromCart(userId, paymentDetails);
       if (!order) {
         return res.status(400).json({ message: 'No se pudo crear la orden.' });
       }
-  
+
+      // Vaciar el carrito solo después de que la orden ha sido creada exitosamente
       await OrderModel.emptyCart(userId);
+
+      // Preparar y enviar el email de confirmación
       const emailContext = {
         userName: `${req.user.name} ${req.user.lastname}`,
         items: order.items.map(item => ({
@@ -38,7 +42,7 @@ export class OrderController {
         totalAmount: order.paymentDetails.amountPaid / 100,
         paymentMethod: order.paymentDetails.paymentMethodId,
         year: new Date().getFullYear(),
-      }
+      };
   
       await sendMail(req.user.email, "Detalles de tu pago EcoPlace", "order_created", emailContext);
       res.status(201).json(order);
