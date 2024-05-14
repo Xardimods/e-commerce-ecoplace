@@ -1,31 +1,29 @@
 import cors from 'cors'
 
 const ACCEPTED_ORIGINS = [
+  'https://ecoplace.vercel.app',
+  'https://ecoplace.vercel.app/success',
+  'https://ecoplace.vercel.app/cancel',
+  'https://main--ecoplaceapp.netlify.app',
+  'https://main--ecoplaceapp.netlify.app/success',
+  'https://main--ecoplaceapp.netlify.app/cancel',
+  'https://ecoplaceapp.netlify.app',
+  'https://ecoplaceapp.netlify.app/success',
+  'https://ecoplaceapp.netlify.app/cancel',
   'http://localhost:8080',
+  'http://localhost:80',
   'http://localhost:3000',
   'http://localhost:3001',
-  'http://localhost:3001/sucess',
-  'http://localhost:3001/cancel',
   'http://localhost:4321',
   'http://34.201.92.59:3000',
-  'http://34.201.92.59:3000/success',
-  'http://34.201.92.59:3000/cancel',
   'https://34.201.92.59',
-  'https://34.201.92.59/success',
-  'https://34.201.92.59/cancel',
   'https://34.201.92.59:443',
-  'https://34.201.92.59:443/success',
-  'https://34.201.92.59:443/cancel',
   'https://ecoplace-api.zeabur.app',
-  'https://ecoplace-api.zeabur.app/success',
-  'https://ecoplace-api.zeabur.app/cancel',
-  'https://ecoplace.vercel.app',
   'https://movies.com',
   'https://midu.dev',
   'https://ecoplace.3.us-1.fl0.io',
   'https://ecoplaceapi-dev-eqsz.4.us-1.fl0.io',
-  'https://main--ecoplaceapp.netlify.app',
-  'https://ecoplaceapp.netlify.app',
+
   'ecoplaceapiimages.appspot.com'
 ]
 
