@@ -74,8 +74,8 @@ export class OrderController {
         payment_method_types: ['card'],
         line_items: lineItems,
         mode: 'payment',
-        success_url: 'https://ecoplaceapp.netlify.app/success?session_id={CHECKOUT_SESSION_ID}',
-        cancel_url: 'https://ecoplaceapp.netlify.app/cancel',
+        success_url: `${req.headers.origin}/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${req.headers.origin}/cancel`,
       });
 
       res.json({ sessionId: session.id });
