@@ -18,6 +18,8 @@ const ACCEPTED_ORIGINS = [
   'https://midu.dev',
   'https://ecoplace.3.us-1.fl0.io',
   'https://ecoplaceapi-dev-eqsz.4.us-1.fl0.io',
+  'https://main--ecoplaceapp.netlify.app',
+  'https://ecoplaceapp.netlify.app',
   'ecoplaceapiimages.appspot.com'
 ]
 
