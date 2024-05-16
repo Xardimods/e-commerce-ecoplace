@@ -146,13 +146,13 @@ export class OrderModel {
             .sort({ createdAt: -1 })
             .populate({
                 path: 'items.product',
-                select: 'name description images brand price',
+                select: 'name description images brand price -_id',
                 populate: [
-                    { path: 'categories', select: 'name' },
-                    { path: 'seller', select: 'name lastname' }
+                    { path: 'categories', select: 'categoryName -_id)' },
+                    { path: 'seller', select: 'name lastname -_id' }
                 ]
             })
-            .populate('customer', 'name lastname street city country zip');
+            .populate('customer', 'name lastname street city country zip -_id');
     } catch (error) {
         console.error("Error fetching all orders by user:", error);
         throw error;
