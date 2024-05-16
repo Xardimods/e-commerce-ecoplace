@@ -10,9 +10,9 @@ const ACCEPTED_ORIGINS = [
   'https://ecoplaceapp.netlify.app',
   'https://ecoplaceapp.netlify.app/success',
   'https://ecoplaceapp.netlify.app/cancel',
-  'http://107.21.46.49:4173',
-  'http://107.21.46.49:4173/success',
-  'http://107.21.46.49:4173/cancel',
+  'http://54.90.137.95:4173',
+  'http://54.90.137.95:4173/success',
+  'http://54.90.137.95:4173/cancel',
   'http://localhost:8080',
   'http://localhost:80',
   'http://localhost:3000',
@@ -26,7 +26,6 @@ const ACCEPTED_ORIGINS = [
   'https://midu.dev',
   'https://ecoplace.3.us-1.fl0.io',
   'https://ecoplaceapi-dev-eqsz.4.us-1.fl0.io',
-
   'ecoplaceapiimages.appspot.com'
 ]
 
