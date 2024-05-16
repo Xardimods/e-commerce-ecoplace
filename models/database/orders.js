@@ -148,7 +148,7 @@ export class OrderModel {
                 path: 'items.product',
                 select: 'name description images brand price -_id',
                 populate: [
-                    { path: 'categories', select: 'categoryName -_id)' },
+                    { path: 'categories', select: 'categoryName)' },
                     { path: 'seller', select: 'name lastname -_id' }
                 ]
             })
