@@ -104,6 +104,16 @@ export class OrderController {
       res.status(400).json({ message: error.message });
     }
   }
+
+  static async getAllUserOrders(req, res) {
+    const userId = req.user._id;
+    try {
+        const orders = await OrderModel.getAllOrdersByUser(userId);
+        res.json(orders);
+    } catch (error) {
+        res.status(500).json({ message: "Error retrieving all user orders", error });
+    }
+}
   
   static async getOrder(req, res) {
     const { orderId } = req.params;

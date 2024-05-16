@@ -14,7 +14,7 @@ export { Category }
 
 export class CategoriesModel {
   static async getAll() {
-    return await Category.find();   
+    return await Category.find().select('categoryName -_id');   
   }
 
   static async getById({ id }) {

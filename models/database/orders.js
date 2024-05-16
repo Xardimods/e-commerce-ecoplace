@@ -140,6 +140,25 @@ export class OrderModel {
     }
   }
 
+  static async getAllOrdersByUser(userId) {
+    try {
+        return await Order.find({ customer: userId })
+            .sort({ createdAt: -1 })
+            .populate({
+                path: 'items.product',
+                select: 'name description images brand price',
+                populate: [
+                    { path: 'categories', select: 'name' },
+                    { path: 'seller', select: 'name lastname' }
+                ]
+            })
+            .populate('customer', 'name lastname street city country zip');
+    } catch (error) {
+        console.error("Error fetching all orders by user:", error);
+        throw error;
+    }
+}
+
   static async getOrderById(orderId) {
     try {
     const order = await Order.findById(orderId)
