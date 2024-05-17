@@ -162,7 +162,7 @@ export class OrderModel {
   static async getOrderById(orderId) {
     try {
     const order = await Order.findById(orderId)
-      .populate('items.product', 'name price')
+      .populate('items.product', 'name image price quantity brand price description')
       .populate('customer', 'name lastname street city country zip paymentDetails');
 
     // Verifica si la orden existe antes de intentar acceder a sus propiedades
