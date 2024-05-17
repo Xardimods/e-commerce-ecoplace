@@ -58,12 +58,23 @@ export class UserController {
 
   static async updateUser(req, res) {
     try {
-      const user = await UserModel.updateUser(req.user._id, req.body)
+      const allowedUpdates = ['name', 'lastname', 'email', 'phone', 'street', 'city', 'country', 'zip', 'currentPassword', 'newPassword'];
+      const updates = req.body;
+      const updateKeys = Object.keys(updates);
+  
+      const isValidOperation = updateKeys.every((update) => allowedUpdates.includes(update));
+  
+      if (!isValidOperation) {
+        throw new Error('Actualizaciones inválidas');
+      }
+  
+      const user = await UserModel.updateUser(req.user._id, updates);
       res.json(user);
     } catch (error) {
-      res.status(400).send({ message: error.message })
+      res.status(400).send({ message: error.message });
     }
   }
+  
 
   static async deleteUser(req, res) {
     try {
