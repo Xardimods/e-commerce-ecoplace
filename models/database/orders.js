@@ -110,7 +110,7 @@ export class OrderModel {
     try {
       let orders = await Order.find({ customer: userId })
           .sort({ createdAt: -1 })
-          .populate('items.product', 'name price')
+          .populate('items.product', 'name images price')
           .populate('customer', 'name lastname street city country zip paymentDetails');
 
       // Asegurarse de manejar ítems cuyo producto ha sido eliminado
