@@ -16,7 +16,7 @@ export class OrderController {
   
       const paymentDetails = {
         paymentMethodId: session.payment_method_types[0],
-        amountPaid: session.amount_total,
+        amountPaid: session.amount_total / 100,
         cardLastFourDigits: '****',
         cardExpirationDate: 'MM/AA',
         cardHolderName: 'Nombre Apellido',
@@ -39,7 +39,7 @@ export class OrderController {
           quantity: item.quantity,
           productPrice: item.product.price,
         })),
-        totalAmount: order.paymentDetails.amountPaid / 100,
+        totalAmount: order.paymentDetails.amountPaid,
         paymentMethod: order.paymentDetails.paymentMethodId,
         year: new Date().getFullYear(),
       };
