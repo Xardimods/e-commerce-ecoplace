@@ -17,3 +17,6 @@ UserRouter.delete('/me', auth, authRole(['Customer']), UserController.deleteUser
 UserRouter.get('/admin/users', auth, authRole(['Admin']), UserController.getAllUsers);
 UserRouter.get('/admin/users/:id', auth, authRole(['Admin']), UserController.getUserById);
 UserRouter.patch('/admin/users/:id', auth, authRole(['Admin']), UserController.adminUpdateUser);
+
+UserRouter.post('/forgot-password', UserController.forgotPassword);
+UserRouter.post('/reset-password/:token', UserController.resetPassword);

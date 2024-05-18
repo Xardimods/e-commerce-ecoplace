@@ -89,7 +89,15 @@ const userSchema = mongoose.Schema({
       type: String,
       required: true,
     }
-  }]
+  }],
+  resetPasswordToken: {
+    type: String,
+    default: ''
+  },
+  resetPasswordExpires: {
+    type: Date,
+    default: null
+  }
 });
 
 userSchema.methods.toJSON = function () {
@@ -98,6 +106,8 @@ userSchema.methods.toJSON = function () {
 
   delete userObject.password // Eliminar la contraseña del objeto que se devuelve
   delete userObject.tokens // Eliminar tokens para no enviarlos al cliente
+  delete userObject.resetPasswordToken;
+  delete userObject.resetPasswordExpires;
 
   return userObject
 }
@@ -108,6 +118,11 @@ userSchema.methods.generateAuthToken = async function () {
   user.tokens = user.tokens.concat({ token })
   await user.save()
   return token
+}
+
+userSchema.methods.generatePasswordReset = function() {
+  this.resetPasswordToken = jwt.sign({ _id: this._id.toString() }, process.env.JWT_SECRET_KEY, { expiresIn: '24h' });
+  this.resetPasswordExpires = Date.now() + 24 * 60 * 60 * 1000; // Expira en 24 horas
 }
 
 userSchema.pre('save', async function (next) {
@@ -243,6 +258,29 @@ export class UserModel {
     } catch (error) {
       throw new Error('Error updating user by admin: ' + error.message);
     }
+  }
+
+  static async createPasswordResetToken(email) {
+    const user = await User.findOne({ email });
+    if (!user) {
+      throw new Error('Usuario no encontrado');
+    }
+    user.generatePasswordReset();
+    await user.save();
+    return user;
+  }
+
+  static async resetPassword(token, newPassword) {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    const user = await User.findOne({ _id: decoded._id, resetPasswordToken: token, resetPasswordExpires: { $gt: Date.now() } });
+    if (!user) {
+      throw new Error('Token inválido o expirado');
+    }
+    user.password = newPassword;
+    user.resetPasswordToken = '';
+    user.resetPasswordExpires = null;
+    await user.save();
+    return user;
   }
 }
 

@@ -173,5 +173,49 @@ export class UserController {
       res.status(400).json({ error: error.message });
     }
   }
+
+  static async forgotPassword(req, res) {
+    try {
+      const { email } = req.body;
+      const user = await UserModel.createPasswordResetToken(email);
+      const resetToken = user.resetPasswordToken;
+      
+      const emailContext = {
+        userName: `${user.name} ${user.lastname}`,
+        resetLink: `${req.headers.origin}/reset-password`,
+        year: new Date().getFullYear()
+      };
+      await sendMail(email, "Restablecimiento de contraseña", "forgot_password", emailContext);
+      res.status(200).send({ message: "Se ha enviado un correo para restablecer la contraseña", resetToken });
+    } catch (error) {
+      res.status(400).send({ error: error.message });
+    }
+  }
+
+  static async resetPassword(req, res) {
+    try {
+      const { token } = req.params;
+      const { password } = req.body;
+      const user = await UserModel.resetPassword(token, password);
+
+      const ipAddress = req.ip;
+      const device = req.headers['user-agent']; // Información del dispositivo
+      const location = geoip.lookup(ipAddress); 
+
+      const emailContext = {
+        userName: `${user.name} ${user.lastname}`,
+        ipAddress,
+        device,
+        location: location ? `${location.city}, ${location.region}, ${location.country}` : 'Unknown',
+        year: new Date().getFullYear(),
+      };
+
+      await sendMail(user.email, "Password Reset Confirmation", "reset_password", emailContext);
+
+      res.status(200).send({ message: "Password reset successfully." });
+    } catch (error) {
+      res.status(400).send({ message: error.message });
+    }
+  }
 }
 
