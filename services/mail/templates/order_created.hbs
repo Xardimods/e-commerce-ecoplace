@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Order Confirmation</title>
+  <title>Confirmación de Pedido</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -41,6 +41,28 @@
     .info {
       font-size: 16px;
       line-height: 1.5;
+      margin-bottom: 20px;
+    }
+
+    .order-details {
+      border-top: 1px solid #ddd;
+      padding-top: 20px;
+    }
+
+    .order-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .order-item img {
+      width: 50px;
+      height: 50px;
+      margin-right: 15px;
+    }
+
+    .order-item-details {
+      flex: 1;
     }
 
     .footer {
@@ -49,6 +71,7 @@
       color: #777;
       padding: 20px;
       border-top: 1px solid #ddd;
+      margin-top: 20px;
     }
 
     .footer a {
@@ -64,27 +87,36 @@
 <body>
   <div class="container">
     <div class="header">
-      <h1>Order Confirmation</h1>
+      <h1>Confirmación de Pedido</h1>
     </div>
     <div class="content">
-      <p>Hello, {{userName}}.</p>
-      <p class="info">Thank you for your order with EcoPlace!</p>
-      <p class="info">Here are the details of your order:</p>
-      <ul>
+      <p class="info">Hola, {{userName}}.</p>
+      <p class="info">¡Gracias por tu compra en EcoPlace!</p>
+      <p class="info">Aquí están los detalles de tu pedido:</p>
+      <div class="order-details">
         {{#each items}}
-        <li>{{productName}} - Quantity: {{quantity}} - Price: ${{productPrice}}</li>
+        <div class="order-item">
+          <img src="{{productImage}}" alt="{{productName}}">
+          <div class="order-item-details">
+            <p><strong>{{productName}}</strong></p>
+            <p>Categoría: {{productCategory}}</p>
+            <p>Cantidad: {{quantity}}</p>
+            <p>Precio: ${{productPrice}}</p>
+            <p>Vendedor: {{sellerName}}</p>
+          </div>
+        </div>
         {{/each}}
-      </ul>
-      <p class="info">Total Amount Paid: ${{totalAmount}}</p>
-      <p class="info">Payment Method: {{paymentMethod}}</p>
+      </div>
+      <p class="info"><strong>Total Pagado:</strong> ${{totalAmount}}</p>
+      <p class="info"><strong>Método de Pago:</strong> {{paymentMethod}}</p>
       <p class="info">
-        If you have any questions about your order, please contact our support team.
+        Si tienes alguna pregunta sobre tu pedido, por favor contacta a nuestro equipo de soporte.
       </p>
     </div>
     <div class="footer">
-      <p>&copy; {{year}} EcoPlace. All rights reserved.</p>
+      <p>&copy; {{year}} EcoPlace. Todos los derechos reservados.</p>
       <p>
-        If you have any questions, please <a href="mailto:support@ecoplace.com">contact us</a>.
+        Si tienes alguna pregunta, por favor <a href="mailto:support@ecoplace.com">contáctanos</a>.
       </p>
     </div>
   </div>

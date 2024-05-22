@@ -13,13 +13,13 @@ const orderItemSchema = new mongoose.Schema({
   },
 }, {
   timestamps: false,
-  _id: false // Evita la creación de un _id para subdocumentos si no es necesario
+  _id: false
 });
 
 const paymentDetailsSchema = new mongoose.Schema({
   paymentMethodId: String,
   amountPaid: Number,
-  cardLastFourDigits: String, // Guardar solo los últimos cuatro dígitos
+  cardLastFourDigits: String,
   cardExpirationDate: String,
   cardHolderName: String,
 }, {
@@ -37,7 +37,7 @@ const orderSchema = new mongoose.Schema({
     type: String,
     required: true,
     enum: ["Pending", "Paid", "Shipped", "Cancelled"],
-    default: null,
+    default: "Pending",
   },
   trackingNumber: {
     type: String,
@@ -49,9 +49,8 @@ const orderSchema = new mongoose.Schema({
     default: Date.now,
   },
 }, {
-  timestamps: true // Aprovecha la creación automática de campos createdAt y updatedAt
+  timestamps: true
 });
-
 
 const Order = mongoose.model("Order", orderSchema);
 
@@ -59,34 +58,72 @@ export { Order }
 
 export class OrderModel {
   static async createOrderFromCart(userId, paymentDetails) {
-    try {
-      const cart = await Cart.findOne({ User: userId }).populate('items.product');
-      
-      if (!cart || cart.items.length === 0) {
-        throw new Error('No items in cart.');
+    const MAX_RETRIES = 5;
+    let attempts = 0;
+
+    while (attempts < MAX_RETRIES) {
+      const session = await mongoose.startSession();
+      session.startTransaction();
+
+      try {
+        const cart = await Cart.findOne({ User: userId }).populate({
+          path: 'items.product',
+          populate: {
+            path: 'categories seller',
+            select: 'categoryName name lastname images'
+          }
+        }).session(session);
+
+        if (!cart || cart.items.length === 0) {
+          throw new Error('No items in cart.');
+        }
+
+        const order = await Order.create([{
+          items: cart.items.map(item => ({
+            product: item.product._id,
+            quantity: item.quantity,
+          })),
+          customer: userId,
+          paymentDetails: {
+            paymentMethodId: paymentDetails.paymentMethodId,
+            amountPaid: paymentDetails.amountPaid,
+            cardLastFourDigits: paymentDetails.cardLastFourDigits,
+            cardExpirationDate: paymentDetails.cardExpirationDate || "No Aplica",
+            cardHolderName: paymentDetails.cardHolderName || "No Aplica",
+          },
+          status: 'Paid',
+        }], { session });
+
+        cart.items = [];
+        await cart.save({ session });
+
+        await session.commitTransaction();
+        session.endSession();
+
+        await order[0].populate({
+          path: 'items.product',
+          populate: {
+            path: 'categories seller',
+            select: 'categoryName name lastname images'
+          }
+        });
+
+        return order[0];
+      } catch (error) {
+        await session.abortTransaction();
+        session.endSession();
+        
+        if (error.message.includes('Write conflict')) {
+          attempts += 1;
+          console.log(`Retrying transaction... Attempt ${attempts}`);
+          await new Promise(resolve => setTimeout(resolve, 100)); // Pequeño retraso antes de reintentar
+        } else {
+          throw new Error('Error creating order from cart: ' + error.message);
+        }
       }
-
-      // Aquí iría tu lógica para crear la orden basada en los ítems del carrito
-      const order = await Order.create({
-        items: cart.items.map(item => ({
-          product: item.product._id,
-          quantity: item.quantity,
-        })),
-        customer: userId,
-        paymentDetails: {
-          paymentMethodId: paymentDetails.paymentMethodId,
-          amountPaid: paymentDetails.amountPaid,
-          cardLastFourDigits: paymentDetails.cardLastFourDigits,
-          cardExpirationDate: paymentDetails.cardExpirationDate || "No Aplica",
-          cardHolderName: paymentDetails.cardHolderName || "No Aplica",
-        },
-        status: 'Paid', // Asume que este estado indica que el pago fue exitoso
-      });
-
-      return order;
-    } catch (error) {
-      throw new Error('Error creating order from cart: ' + error.message);
     }
+
+    throw new Error('Max retries reached. Unable to create order from cart.');
   }
 
   static async emptyCart(userId) {
@@ -105,7 +142,7 @@ export class OrderModel {
       throw new Error('Error emptying cart: ' + error.message);
     }
   }
-
+  
   static async getOrdersByUser(userId) {
     try {
       let orders = await Order.find({ customer: userId })
