@@ -37,7 +37,7 @@ export class UserController {
       const userCreated = await UserModel.createUser(userData);
 
       const emailContext = {
-        title: 'Welcome to Ecoplace!',
+        title: 'Bienvenido a Ecoplace!',
         userName: `${userCreated.name} ${userCreated.lastname}`,
         userEmail: userCreated.email,
         userPhone: userCreated.phone,
@@ -48,7 +48,7 @@ export class UserController {
         year: new Date().getFullYear(),
       }
 
-      sendMail(req.body.email, "User Created", "register_account", emailContext);
+      sendMail(req.body.email, "Usuario Creado Exitosamente", "register_account", emailContext);
 
       res.status(201).send(userCreated);
     } catch (error) {
@@ -105,7 +105,7 @@ export class UserController {
           : 'Unknown',
         };
 
-        sendMail(user.email, "Login Notification", "login_notification", emailContext);
+        sendMail(user.email, "Notificación de Inicio de Sesión", "login_notification", emailContext);
 
         res.status(200).json({
           message: "Login successful",
@@ -210,7 +210,7 @@ export class UserController {
         year: new Date().getFullYear(),
       };
 
-      await sendMail(user.email, "Password Reset Confirmation", "reset_password", emailContext);
+      await sendMail(user.email, "Confirmacion de Restablecimiento de Contraseña", "reset_password", emailContext);
 
       res.status(200).send({ message: "Password reset successfully." });
     } catch (error) {
