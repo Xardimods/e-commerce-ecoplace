@@ -15,3 +15,4 @@ StatsRouter.get('/categories/count', auth, authRole(['Admin']), StatsController.
 //Seller
 StatsRouter.get('/client/products-sold', auth, authRole(['Seller']), StatsController.getTotalProductsSoldBySeller);
 StatsRouter.get('/client/products-created', auth, authRole(['Seller']), StatsController.getTotalProductsCreatedBySeller);
+StatsRouter.get('/client/product-sales-stats', auth, authRole(['Seller']), StatsController.getProductSalesStats);

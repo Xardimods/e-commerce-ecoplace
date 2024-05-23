@@ -82,6 +82,49 @@ export class StatsController{
       res.status(500).json({ message: 'Error fetching total products created by client', error: error.message });
     }
   };
+
+  static async getProductSalesStats(req, res) {
+    const sellerId = req.user._id;
+    try {
+        const orders = await Order.find({})
+            .populate({
+                path: 'items.product',
+                populate: [
+                    { path: 'categories', select: 'categoryName' },
+                    { path: 'seller', select: 'name lastname' }
+                ]
+            });
+
+        let productSales = {};
+
+        orders.forEach(order => {
+            order.items.forEach(item => {
+                if (item.product && item.product.seller && item.product.seller._id && item.product.seller._id.toString() === sellerId.toString()) {
+                    const productId = item.product._id.toString();
+                    if (!productSales[productId]) {
+                        productSales[productId] = {
+                            name: item.product.name,
+                            price: item.product.price,
+                            sold: 0,
+                            categories: item.product.categories.map(cat => cat.categoryName)
+                        };
+                    }
+                    productSales[productId].sold += item.quantity;
+                }
+            });
+        });
+
+        const salesStats = Object.values(productSales);
+        const mostSold = salesStats.sort((a, b) => b.sold - a.sold).slice(0, 5);
+        const leastSold = salesStats.sort((a, b) => a.sold - b.sold).slice(0, 5);
+        const highestPriceSold = salesStats.sort((a, b) => b.price - a.price).slice(0, 5);
+        const lowestPriceSold = salesStats.sort((a, b) => a.price - b.price).slice(0, 5);
+
+        res.json({ mostSold, leastSold, highestPriceSold, lowestPriceSold });
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching product sales stats', error: error.message });
+    }
+  };
 }
 
 
