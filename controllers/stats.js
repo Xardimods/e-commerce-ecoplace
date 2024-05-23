@@ -49,6 +49,30 @@ export class StatsController{
         res.status(500).json({ message: 'Error fetching categories count', error: error.message });
     }
   };
+
+  static async getTotalProductsSoldToClient(req, res) {
+    const userId = req.user._id; // Asumiendo que el ID del usuario está en el token de autenticación
+    try {
+      const orders = await Order.find({ customer: userId }).populate('items.product');
+      let totalProductsSold = 0;
+      orders.forEach(order => {
+        totalProductsSold += order.items.reduce((sum, item) => sum + item.quantity, 0);
+      });
+      res.json({ totalProductsSold });
+    } catch (error) {
+      res.status(500).json({ message: 'Error fetching total products sold to client', error: error.message });
+    }
+  };
+
+  static async getTotalProductsCreatedByClient(req, res) {
+    const userId = req.user._id; // Asumiendo que el ID del usuario está en el token de autenticación
+    try {
+      const totalProductsCreated = await Product.countDocuments({ seller: userId });
+      res.json({ totalProductsCreated });
+    } catch (error) {
+      res.status(500).json({ message: 'Error fetching total products created by client', error: error.message });
+    }
+  };
 }
 
 
