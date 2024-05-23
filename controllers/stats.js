@@ -50,21 +50,30 @@ export class StatsController{
     }
   };
 
-  static async getTotalProductsSoldToClient(req, res) {
-    const userId = req.user._id; // Asumiendo que el ID del usuario está en el token de autenticación
+  static async getTotalProductsSoldBySeller(req, res) {
+    const sellerId = req.user._id; // Asumiendo que el ID del usuario está en el token de autenticación
     try {
-      const orders = await Order.find({ customer: userId }).populate('items.product');
+      const orders = await Order.find({}).populate({
+        path: 'items.product',
+        select: 'seller'
+      });
+
       let totalProductsSold = 0;
       orders.forEach(order => {
-        totalProductsSold += order.items.reduce((sum, item) => sum + item.quantity, 0);
+        order.items.forEach(item => {
+          if (item.product && item.product.seller && item.product.seller.toString() === sellerId.toString()) {
+            totalProductsSold += item.quantity;
+          }
+        });
       });
+
       res.json({ totalProductsSold });
     } catch (error) {
-      res.status(500).json({ message: 'Error fetching total products sold to client', error: error.message });
+      res.status(500).json({ message: 'Error fetching total products sold by seller', error: error.message });
     }
-  };
+  }
 
-  static async getTotalProductsCreatedByClient(req, res) {
+  static async getTotalProductsCreatedBySeller(req, res) {
     const userId = req.user._id; // Asumiendo que el ID del usuario está en el token de autenticación
     try {
       const totalProductsCreated = await Product.countDocuments({ seller: userId });

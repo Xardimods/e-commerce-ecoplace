@@ -13,5 +13,5 @@ StatsRouter.get('/users/count', auth, authRole(['Admin']), StatsController.getUs
 StatsRouter.get('/categories/count', auth, authRole(['Admin']), StatsController.getCategoriesCount);
 
 //Seller
-StatsRouter.get('/client/products-sold', auth, authRole(['Seller']), StatsController.getTotalProductsSoldToClient);
-StatsRouter.get('/client/products-created', auth, authRole(['Seller']), StatsController.getTotalProductsCreatedByClient);
+StatsRouter.get('/client/products-sold', auth, authRole(['Seller']), StatsController.getTotalProductsSoldBySeller);
+StatsRouter.get('/client/products-created', auth, authRole(['Seller']), StatsController.getTotalProductsCreatedBySeller);
