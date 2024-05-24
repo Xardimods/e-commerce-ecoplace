@@ -147,7 +147,13 @@ export class OrderModel {
     try {
       let orders = await Order.find({ customer: userId })
           .sort({ createdAt: -1 })
-          .populate('items.product', 'name images price')
+          .populate({
+          path: 'items.product', 
+          select: 'name images price',
+          populate: [
+            { path: 'seller', select: 'name lastname -_id' }
+          ]
+          })
           .populate('customer', 'name lastname street city country zip paymentDetails');
 
       // Asegurarse de manejar ítems cuyo producto ha sido eliminado
@@ -199,8 +205,14 @@ export class OrderModel {
   static async getOrderById(orderId) {
     try {
     const order = await Order.findById(orderId)
-      .populate('items.product', 'name images price quantity brand price description')
-      .populate('customer', 'name lastname street city country zip paymentDetails');
+      .populate({
+      path: 'items.product', 
+      select: 'name images price quantity brand price description',
+      populate: [
+        { path: 'categories', select: 'categoryName' },
+        { path: 'seller', select: 'name lastname -_id' }
+      ]
+      }).populate('customer', 'name lastname street city country zip paymentDetails');
 
     // Verifica si la orden existe antes de intentar acceder a sus propiedades
     if (!order) {

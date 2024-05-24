@@ -11,6 +11,7 @@ StatsRouter.get('/orders/count', auth, authRole(['Admin']),StatsController.getOr
 StatsRouter.get('/products/count', auth, authRole(['Admin']), StatsController.getProductsCount);
 StatsRouter.get('/users/count', auth, authRole(['Admin']), StatsController.getUsersCount);
 StatsRouter.get('/categories/count', auth, authRole(['Admin']), StatsController.getCategoriesCount);
+StatsRouter.get('/admin/product-sales-stats', auth, authRole(['Admin']), StatsController.getSalesStats);
 
 //Seller
 StatsRouter.get('/client/products-sold', auth, authRole(['Seller']), StatsController.getTotalProductsSoldBySeller);
